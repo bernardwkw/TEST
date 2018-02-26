@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3949AB</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="backgroundColor">#F2F1EF</color>
+    <color name="whiteText">#ffffff</color>
+    <color name="panelColor">#3949ab</color>
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextDisable">#66FFFFFF</color>
+    <color name="zebra_color">#E8EAF6</color>
+
+    //slider
+    <color name="slider_color_default">#3F51B5</color>
+    <color name="button_color_default">#FFFFFF</color>
+    <color name="stroke_color_default">#FFFFFF</color>
+
+    //focus btn
+    <color name="focus_btn">#ff8800</color>
+
+    <color name="lightGrey">#949494</color>
+    <color name="cardViewDisabled">#e2e2e2</color>
+
+    //
+    <color name="green">#b1ffa7</color>
+    <color name="red">#fd8d8f</color>
+</resources>

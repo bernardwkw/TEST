@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_color"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp">
+
+    <ImageButton
+        android:elevation="@dimen/small_elevation"
+        android:id="@+id/inspection_btn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        android:padding="10dp"
+        android:background="@drawable/btn_blue"
+        android:src="@drawable/ic_inspection"
+        android:onClick="inspectionClick" />
+
+    <ImageButton
+        android:elevation="@dimen/small_elevation"
+        android:id="@+id/log_equity_btn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        android:padding="10dp"
+        android:background="@drawable/btn_green"
+        android:src="@drawable/ic_enquiry"
+        android:onClick="enquiryClick" />
+
+    <ImageButton
+        android:elevation="@dimen/small_elevation"
+        android:id="@+id/sync_btn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        android:padding="10dp"
+        android:background="@drawable/btn_purple"
+        android:src="@drawable/ic_sync"
+        android:onClick="syncClick" />
+
+</LinearLayout>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/layout_margin"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:elevation="@dimen/small_elevation"
+    card_view:cardCornerRadius="4dp"
+    android:id="@+id/download_card_view"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_margin="@dimen/layout_margin_medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/total_log_tv"
+                android:textColor="@color/lightGrey"
+                android:textSize="@dimen/large_text"
+                android:text="100"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginLeft="@dimen/layout_margin"
+                android:paddingBottom="@dimen/layout_padding_small"
+                android:textSize="@dimen/small_text"
+                android:text="total logs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/layout_margin_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/doc_type_tv"
+                android:textColor="@color/dark_primary"
+                android:textSize="@dimen/medium_text"
+                android:text="R"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginLeft="@dimen/layout_margin"
+                android:textSize="@dimen/small_text"
+                android:text="doc type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/batch_tv"
+                android:textColor="@color/dark_primary"
+                android:textSize="@dimen/medium_text"
+                android:text="KUCR3422"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginLeft="@dimen/layout_margin"
+                android:textSize="@dimen/small_text"
+                android:text="reference No."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/account_code_tv"
+                android:textColor="@color/dark_primary"
+                android:textSize="@dimen/medium_text"
+                android:text="KU21HFT8233"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:textSize="@dimen/small_text"
+                android:text="account code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/licensee_tv"
+                android:textColor="@color/dark_primary"
+                android:textSize="@dimen/medium_text"
+                android:text="M and P TRADING CO."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginLeft="10dp"
+                android:textSize="@dimen/small_text"
+                android:text="licensee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <CheckBox
+            android:layout_margin="@dimen/layout_margin"
+            android:layout_alignParentRight="true"
+            android:id="@+id/checkbox"
+            android:clickable="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageButton
+            android:padding="20dp"
+            android:id="@+id/summary_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/layout_margin"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_view"
+            android:text="Summary" />
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>
