@@ -9,10 +9,6 @@ import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -27,18 +23,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import my.com.sains.teams.activities.App;
-import my.com.sains.teams.db.DaoSession;
+import my.com.sains.teams.db.DbManager;
 import my.com.sains.teams.db.DeviceSetupDao;
-import my.com.sains.teams.db.InspectUpload;
 import my.com.sains.teams.db.InspectUploadDao;
-import my.com.sains.teams.db.LogRegister;
 import my.com.sains.teams.db.LogRegisterDao;
-import my.com.sains.teams.db.LogRegisterQuery;
 import my.com.sains.teams.db.LogRegisterQueryDao;
-import my.com.sains.teams.db.MobileDoc;
 import my.com.sains.teams.db.MobileDocDao;
-import my.com.sains.teams.db.User;
 import my.com.sains.teams.db.UserDao;
 import my.com.sains.teams.utils.CipherAES;
 import my.com.sains.teams.utils.Consts;
@@ -67,6 +57,8 @@ public class Http extends AsyncTask<String, String, String>{
     private JSONObject jsonObject;
 
     // download_list = M, user_profile = UP, download= U, upload= D
+
+    // get download list or user profiles
     public Http(String url, Activity activity, String mode){
 
         this.urlStr = url;
@@ -75,18 +67,20 @@ public class Http extends AsyncTask<String, String, String>{
 
     }
 
+    // download data
     public Http(String url, Activity activity, String mode, String exchDocId){
         this.urlStr = url;
         this.activity = activity;
         this.mode = mode;
-        this.exchDocId = exchDocId;
+        this.exchDocId = exchDocId; // exchDocId, separated by "," example "111111,222222"
     }
 
+    // upload data
     public Http(String url, Activity activity, String mode, JSONObject jsonObject){
         this.urlStr = url;
         this.activity = activity;
         this.mode = mode;
-        this.jsonObject = jsonObject;
+        this.jsonObject = jsonObject; // jsonObject generated from local db
 
     }
 
@@ -103,7 +97,6 @@ public class Http extends AsyncTask<String, String, String>{
 
     @Override
     protected String doInBackground(String... strings) {
-        //save(Consts.json);
         return query();
     }
 
@@ -142,7 +135,7 @@ public class Http extends AsyncTask<String, String, String>{
             Log.e("device id", telephonyManager.getDeviceId());
             Log.e("encrypted", CipherAES.aesEncode(telephonyManager.getDeviceId()));
 
-            if (mode.equals(Consts.DOWNLOAD_LIST)){ // get json without save
+            if (mode.equals(Consts.DOWNLOAD_LIST)){ // get json without save (download list preview)
                 values.put(Consts.TRAN_TYPE, Consts.DOWNLOAD_LIST);
                 values.put(Consts.LOGINID, pref.getLoginId());
                 values.put(Consts.PASSWORD, pref.getPassWord());
@@ -212,7 +205,8 @@ public class Http extends AsyncTask<String, String, String>{
         //Log.e("query", jsonString);
         if(jsonString != null){
             if (mode.equals(Consts.USER_PROFILES) || mode.equals(Consts.DOWNLOAD)){
-                save(jsonString);
+                DbManager dbManager = new DbManager(activity, jsonString);
+                dbManager.execute();
             }
 
         }
@@ -240,106 +234,8 @@ public class Http extends AsyncTask<String, String, String>{
         return result.toString();
     }
 
-    private void save(String json){
-
-        Log.e("json", json);
-        Gson gson = new Gson();
-
-        DaoSession daoSession = ((App) activity.getApplication()).getDaoSession();
-        mobileDocDao = daoSession.getMobileDocDao();
-        logRegisterDao = daoSession.getLogRegisterDao();
-        logRegisterQueryDao = daoSession.getLogRegisterQueryDao();
-        userDao = daoSession.getUserDao();
-        deviceSetupDao = daoSession.getDeviceSetupDao();
-        inspectUploadDao = daoSession.getInspectUploadDao();
-
-        try {
-
-            JSONObject jsonObject = new JSONObject(json);
-            JSONArray userArray = jsonObject.getJSONArray(Consts.SECURITY_APP_USER);
-            Log.e("User Array", "array");
-            if (userArray != null){
-
-                for (int i=0; i< userArray.length(); i++){
-                    JSONObject userObject = userArray.getJSONObject(i);
-
-                    User user = gson.fromJson(userObject.toString(), User.class);
-
-                    userDao.insertOrReplace(user);
-                }
-            }
-
-            JSONArray mobileDocArray = jsonObject.getJSONArray(Consts.EXCH_MOBILE_DOC);
-            Log.e("mobile", "array");
-            if (mobileDocArray != null){
-
-                for (int i=0; i< mobileDocArray.length(); i++){
-                    JSONObject mobileDocObject = mobileDocArray.getJSONObject(i);
-
-                    MobileDoc mobileDoc = gson.fromJson(mobileDocObject.toString(), MobileDoc.class);
-
-                    mobileDocDao.insertOrReplace(mobileDoc);
-                }
-            }
-
-            JSONArray logRegisterArray = jsonObject.getJSONArray(Consts.MOBILE_LOG_REGISTER);
-            Log.e("logRegister", "array");
-            if (logRegisterArray != null){
-
-                Log.e("logregister json", logRegisterArray.toString());
-
-                for (int i=0; i< logRegisterArray.length(); i++){
-                    JSONObject logRegisterObject = logRegisterArray.getJSONObject(i);
-
-                    LogRegister logRegister = gson.fromJson(logRegisterObject.toString(), LogRegister.class);
-
-                    logRegisterDao.insertOrReplace(logRegister);
-                }
-            }
-
-
-            JSONArray logRegisterQueryArray = jsonObject.getJSONArray(Consts.LOG_REGISTRY_QUERY);
-            Log.e("LogRegister Query", "array");
-            if (logRegisterQueryArray != null){
-
-
-                for (int i=0; i< logRegisterQueryArray.length(); i++){
-                    JSONObject logRegisterQueryObject = logRegisterQueryArray.getJSONObject(i);
-
-                    LogRegisterQuery logRegisterQuery = gson.fromJson(logRegisterQueryObject.toString(),
-                            LogRegisterQuery.class);
-
-                    logRegisterQueryDao.insertOrReplace(logRegisterQuery);
-                }
-            }
-
-            JSONArray tranUploadArray = jsonObject.getJSONArray(Consts.INSPECT_TRAN_UPLAOD);
-            if (tranUploadArray != null){
-
-                for (int i=0; i< tranUploadArray.length(); i++){
-                    JSONObject tranUploadObject = tranUploadArray.getJSONObject(i);
-
-                    InspectUpload inspectUpload = gson.fromJson(tranUploadObject.toString(),
-                            InspectUpload.class);
-
-                    inspectUploadDao.insertOrReplace(inspectUpload);
-                }
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-//        if (onFinishListener != null){
-//            onFinishListener.onFinish();
-//        }
-
-    }
-
 
     private OnHttpExecuted onHttpExecuted;
-//    private OnFinishListener onFinishListener;
 
     public void setOnHttpExecutedListener(OnHttpExecuted onHttpExecutedListener){
         this.onHttpExecuted = onHttpExecutedListener;
@@ -349,11 +245,4 @@ public class Http extends AsyncTask<String, String, String>{
         void onHttpExecutedCallback(String jsonReturn);
     }
 
-//    public void setOnFinishListener(OnFinishListener onFinishListener){
-//        this.onFinishListener = onFinishListener;
-//    }
-//
-//    public interface OnFinishListener{
-//        Void onFinish();
-//    }
 }

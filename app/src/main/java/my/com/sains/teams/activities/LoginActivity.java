@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -23,6 +24,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -32,13 +36,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.ipaulpro.afilechooser.utils.FileUtils;
+
 import org.greenrobot.greendao.query.Query;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import my.com.sains.teams.R;
 import my.com.sains.teams.db.DaoSession;
+import my.com.sains.teams.db.DbManager;
 import my.com.sains.teams.db.User;
 import my.com.sains.teams.db.UserDao;
 import my.com.sains.teams.http.Http;
@@ -111,13 +119,71 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_login_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private static final int REQUEST_CODE = 6384;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_import:
+                // Use the GET_CONTENT intent from the utility class
+                Intent target = FileUtils.createGetContentIntent();
+                // Create the chooser Intent
+                Intent intent = Intent.createChooser(
+                        target, "choose yyy");
+                try {
+                    startActivityForResult(intent, REQUEST_CODE);
+                } catch (ActivityNotFoundException e) {
+                    // The reason for the existence of aFileChooser
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE:
+                // If the file selection was successful
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
+                        // Get the URI of the selected file
+                        final Uri uri = data.getData();
+                        try {
+                            // Get the file path from the URI
+                            final File file = FileUtils.getFile(this, uri);
+
+                            Log.e("filename", file.getParent());
+//                            Toast.makeText(LoginActivity.this,
+//                                    "File Selected: " + path, Toast.LENGTH_LONG).show();
+                            DbManager dbManager = new DbManager(LoginActivity.this, file);
+                            dbManager.execute();
+                            //Log.e("decoded", dbManager.readJson(file));
+                        } catch (Exception e) {
+                            Log.e("FileS", "File select error", e);
+                        }
+                    }
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+    @Override
     protected void onResume() {
         super.onResume();
 
         int PERMISSION_ALL = 1;
-        Log.e("Aes Decode", CipherAES.aesDecode("IhbFddtVMKR9ZAxcix0wKQ=="));
-        Log.e("Aes Decode22","qwqwqwq");
-
 
         if (!hasPermissions(this, PERMISSIONS) && Build.VERSION.SDK_INT >= 23){
 
