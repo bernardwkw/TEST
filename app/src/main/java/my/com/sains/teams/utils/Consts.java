@@ -139,6 +139,8 @@ public class Consts {
     public final static String USER_PROFILES = "UP";
     public final static String DOWNLOAD = "U";
     public final static String UPLOAD = "D";
+    public final static String IMPORT = "import";
+    public final static String export = "export";
     public final static String INSPECTION_RESULT = "inspectionResult";
     public final static String RETCODE = "retCode";
     public final static String LOGINID = "appsLoginID";

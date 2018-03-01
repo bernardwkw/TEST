@@ -300,10 +300,9 @@ public class InspectionActivity extends AppCompatActivity implements
         if (mobileDocList.size()>0 && logRegisterList.size()>0){
 
             displayText(logRegisterList.get(0), mobileDocList.get(0));
-            binding.resultLl.setVisibility(View.VISIBLE);
 
             if(myInspectUploadList.size() >0){
-
+                binding.resultLl.setVisibility(View.VISIBLE);
                 displayLastInspection(myInspectUploadList.get(0));
 
                 binding.scrollView.post(new Runnable() {
@@ -429,27 +428,7 @@ public class InspectionActivity extends AppCompatActivity implements
     private void openDialog() {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
-//        View layout = inflater.inflate(R.layout.item_inspect_dialog,
-//                (ViewGroup) findViewById(R.id.root));
-
         ItemInspectDialogBinding dialogBinding = ItemInspectDialogBinding.inflate(inflater);
-
-//        SlideView lpiSlideView = layout.findViewById(R.id.lpi_slider);
-//        SlideView pmSlideView = layout.findViewById(R.id.pm_slider);
-//        SlideView jhSlideView = layout.findViewById(R.id.jh_slider);
-//        SlideView specSlideView = layout.findViewById(R.id.spec_slider);
-//        SlideView diameterSlideView = layout.findViewById(R.id.diameter_slider);
-//        SlideView lengthSlideView = layout.findViewById(R.id.length_slider);
-
-//        TextView lpiChkTv = layout.findViewById(R.id.lpi_chk_tv);
-//        TextView pmChkTv = layout.findViewById(R.id.pm_chk_tv);
-//        TextView jhChkTv = layout.findViewById(R.id.jh_mark_chk_tv);
-//        TextView specChkTv = layout.findViewById(R.id.spec_chk_tv);
-//        TextView diameterChkTv = layout.findViewById(R.id.diameter_chk_tv);
-//        TextView lengthChkTv = layout.findViewById(R.id.length_chk_tv);
-//
-//        final EditText remarkEt = layout.findViewById(R.id.remark_et);
-//        remarkEt.clearFocus();
 
         statusModalList = null;
         statusModalList = new ArrayList<>();

@@ -26,39 +26,54 @@ import my.com.sains.teams.utils.Consts;
  * Created by User on 27/2/2018.
  */
 
-public class DbManager extends AsyncTask<Void, Void, Void> {
+public class DbManager extends AsyncTask<Void, Integer, Void> {
 
     private Activity activity;
     private File file;
     private String json;
     private ProgressDialog dialogLoad;
+    private String mode;
 
-    public DbManager(Activity activity, String json){
+    public DbManager(Activity activity, String json, String mode){
+        this.mode = mode;
         this.activity = activity;
         this.json = json;
     }
 
-    public DbManager(Activity activity, File file){
+    public DbManager(Activity activity, File file, String mode){
+        this.mode = mode;
         this.activity = activity;
         this.file = file;
     }
 
+
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        dialogLoad = new ProgressDialog(activity);
-        dialogLoad.setMessage("Please Wait...");
-        dialogLoad.setCancelable(false);
-        dialogLoad.show();
+        if(mode.equals(Consts.IMPORT) || mode.equals(Consts.DOWNLOAD)){
+            dialogLoad = new ProgressDialog(activity);
+            if (mode.equals(Consts.IMPORT)){
+                dialogLoad.setTitle("Importing Data");
+            }else if (mode.equals(Consts.DOWNLOAD)){
+                dialogLoad.setTitle("Downloading Data");
+            }
+            dialogLoad.setMax(100);
+            dialogLoad.setMessage("Don't close the app. This will take a while.");
+            dialogLoad.setCancelable(false);
+            dialogLoad.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            dialogLoad.setIndeterminate(false);
+
+            dialogLoad.show();
+        }
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
 
-        if (json != null){
-            saveJsonToDb(json);
-        }else {
+        if (mode.equals(Consts.IMPORT)){
             saveJsonToDb(readJson(file));
+        }else {
+            saveJsonToDb(json);
         }
         return null;
     }
@@ -66,7 +81,15 @@ public class DbManager extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        dialogLoad.dismiss();
+        Log.e("dialog", "close");
+        if(dialogLoad != null)
+            dialogLoad.dismiss();
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        dialogLoad.setProgress(values[0]);
     }
 
     private void saveJsonToDb(String json){//import into device
@@ -84,82 +107,86 @@ public class DbManager extends AsyncTask<Void, Void, Void> {
         try {
 
             JSONObject jsonObject = new JSONObject(json);
-            JSONArray userArray = jsonObject.getJSONArray(Consts.SECURITY_APP_USER);
-            Log.e("User Array", "array");
-            if (userArray != null){
 
-                for (int i=0; i< userArray.length(); i++){
-                    JSONObject userObject = userArray.getJSONObject(i);
+            if(mode.equals(Consts.USER_PROFILES)){
+                JSONArray userArray = jsonObject.getJSONArray(Consts.SECURITY_APP_USER);
+                Log.e("User Array", "array");
+                if (userArray != null){
 
-                    User user = gson.fromJson(userObject.toString(), User.class);
+                    for (int i=0; i< userArray.length(); i++){
+                        JSONObject userObject = userArray.getJSONObject(i);
 
-                    userDao.insertOrReplace(user);
+                        User user = gson.fromJson(userObject.toString(), User.class);
+
+                        userDao.insertOrReplace(user);
+                    }
+                }
+            }else if(mode.equals(Consts.DOWNLOAD) || mode.equals(Consts.IMPORT)){
+                JSONArray mobileDocArray = jsonObject.getJSONArray(Consts.EXCH_MOBILE_DOC);
+                if (mobileDocArray != null){
+                    Log.e("mobile", "array");
+
+                    for (int i=0; i< mobileDocArray.length(); i++){
+                        JSONObject mobileDocObject = mobileDocArray.getJSONObject(i);
+
+                        MobileDoc mobileDoc = gson.fromJson(mobileDocObject.toString(), MobileDoc.class);
+
+                        mobileDocDao.insertOrReplace(mobileDoc);
+                    }
+                }
+
+                JSONArray logRegisterArray = jsonObject.getJSONArray(Consts.MOBILE_LOG_REGISTER);
+                Log.e("logRegister", "array");
+                if (logRegisterArray != null){
+
+                    Log.e("log register json", logRegisterArray.toString());
+
+                    int size = logRegisterArray.length();
+                    for (int i=0; i< size; i++){
+                        JSONObject logRegisterObject = logRegisterArray.getJSONObject(i);
+
+                        if(mode.equals(Consts.IMPORT) || mode.equals(Consts.DOWNLOAD)){
+
+                            int progress = (int) (((double)i/(double) size)*100);
+                            publishProgress(progress);
+                        }
+
+                        LogRegister logRegister = gson.fromJson(logRegisterObject.toString(), LogRegister.class);
+
+                        logRegisterDao.insertOrReplace(logRegister);
+                    }
+                }
+
+                JSONArray logRegisterQueryArray = jsonObject.getJSONArray(Consts.LOG_REGISTRY_QUERY);
+                if (logRegisterQueryArray != null){
+                    Log.e("LogRegister Query", "array");
+                    for (int i=0; i< logRegisterQueryArray.length(); i++){
+                        JSONObject logRegisterQueryObject = logRegisterQueryArray.getJSONObject(i);
+
+                        LogRegisterQuery logRegisterQuery = gson.fromJson(logRegisterQueryObject.toString(),
+                                LogRegisterQuery.class);
+
+                        logRegisterQueryDao.insertOrReplace(logRegisterQuery);
+                    }
+                }
+
+                JSONArray tranUploadArray = jsonObject.getJSONArray(Consts.INSPECT_TRAN_UPLAOD);
+                if (tranUploadArray != null){
+                    Log.e("tranarray", "array");
+                    for (int i=0; i< tranUploadArray.length(); i++){
+                        JSONObject tranUploadObject = tranUploadArray.getJSONObject(i);
+
+                        InspectUpload inspectUpload = gson.fromJson(tranUploadObject.toString(),
+                                InspectUpload.class);
+
+                        inspectUploadDao.insertOrReplace(inspectUpload);
+                    }
                 }
             }
-
-            JSONArray mobileDocArray = jsonObject.getJSONArray(Consts.EXCH_MOBILE_DOC);
-            Log.e("mobile", "array");
-            if (mobileDocArray != null){
-
-                for (int i=0; i< mobileDocArray.length(); i++){
-                    JSONObject mobileDocObject = mobileDocArray.getJSONObject(i);
-
-                    MobileDoc mobileDoc = gson.fromJson(mobileDocObject.toString(), MobileDoc.class);
-
-                    mobileDocDao.insertOrReplace(mobileDoc);
-                }
-            }
-
-            JSONArray logRegisterArray = jsonObject.getJSONArray(Consts.MOBILE_LOG_REGISTER);
-            Log.e("logRegister", "array");
-            if (logRegisterArray != null){
-
-                Log.e("logregister json", logRegisterArray.toString());
-
-                for (int i=0; i< logRegisterArray.length(); i++){
-                    JSONObject logRegisterObject = logRegisterArray.getJSONObject(i);
-
-                    LogRegister logRegister = gson.fromJson(logRegisterObject.toString(), LogRegister.class);
-
-                    logRegisterDao.insertOrReplace(logRegister);
-                }
-            }
-
-
-            JSONArray logRegisterQueryArray = jsonObject.getJSONArray(Consts.LOG_REGISTRY_QUERY);
-            Log.e("LogRegister Query", "array");
-            if (logRegisterQueryArray != null){
-
-
-                for (int i=0; i< logRegisterQueryArray.length(); i++){
-                    JSONObject logRegisterQueryObject = logRegisterQueryArray.getJSONObject(i);
-
-                    LogRegisterQuery logRegisterQuery = gson.fromJson(logRegisterQueryObject.toString(),
-                            LogRegisterQuery.class);
-
-                    logRegisterQueryDao.insertOrReplace(logRegisterQuery);
-                }
-            }
-
-            JSONArray tranUploadArray = jsonObject.getJSONArray(Consts.INSPECT_TRAN_UPLAOD);
-            if (tranUploadArray != null){
-
-                for (int i=0; i< tranUploadArray.length(); i++){
-                    JSONObject tranUploadObject = tranUploadArray.getJSONObject(i);
-
-                    InspectUpload inspectUpload = gson.fromJson(tranUploadObject.toString(),
-                            InspectUpload.class);
-
-                    inspectUploadDao.insertOrReplace(inspectUpload);
-                }
-            }
-
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private String readJson(File file){
@@ -185,7 +212,6 @@ public class DbManager extends AsyncTask<Void, Void, Void> {
         }
         catch(IOException ex) {
         }
-
 
         return CipherAES.aesDecode(line);
     }

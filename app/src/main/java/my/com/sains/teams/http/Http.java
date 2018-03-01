@@ -24,12 +24,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import my.com.sains.teams.db.DbManager;
-import my.com.sains.teams.db.DeviceSetupDao;
-import my.com.sains.teams.db.InspectUploadDao;
-import my.com.sains.teams.db.LogRegisterDao;
-import my.com.sains.teams.db.LogRegisterQueryDao;
-import my.com.sains.teams.db.MobileDocDao;
-import my.com.sains.teams.db.UserDao;
 import my.com.sains.teams.utils.CipherAES;
 import my.com.sains.teams.utils.Consts;
 import my.com.sains.teams.utils.Pref;
@@ -46,12 +40,6 @@ public class Http extends AsyncTask<String, String, String>{
     private String jsonString;
     private String mode;
     private Activity activity;
-    private MobileDocDao mobileDocDao;
-    private LogRegisterDao logRegisterDao;
-    private DeviceSetupDao deviceSetupDao;
-    private UserDao userDao;
-    private LogRegisterQueryDao logRegisterQueryDao;
-    private InspectUploadDao inspectUploadDao;
     private ProgressDialog dialogLoad;
     private String exchDocId="";
     private JSONObject jsonObject;
@@ -60,11 +48,9 @@ public class Http extends AsyncTask<String, String, String>{
 
     // get download list or user profiles
     public Http(String url, Activity activity, String mode){
-
         this.urlStr = url;
         this.activity = activity;
         this.mode = mode;
-
     }
 
     // download data
@@ -88,11 +74,12 @@ public class Http extends AsyncTask<String, String, String>{
     protected void onPreExecute() {
         super.onPreExecute();
 
-        dialogLoad = new ProgressDialog(activity);
-        dialogLoad.setMessage("Please Wait...");
-        dialogLoad.setCancelable(false);
-        dialogLoad.show();
-
+//        if(!mode.equals(Consts.IMPORT) || !mode.equals(Consts.DOWNLOAD) || !mode.equals(Consts.DOWNLOAD_LIST)){
+//            dialogLoad = new ProgressDialog(activity);
+//            dialogLoad.setMessage("Please Wait...");
+//            dialogLoad.setCancelable(false);
+//            dialogLoad.show();
+//        }
     }
 
     @Override
@@ -101,9 +88,17 @@ public class Http extends AsyncTask<String, String, String>{
     }
 
     @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-        dialogLoad.dismiss();
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        if (dialogLoad != null)
+            dialogLoad.dismiss();
+
+        if(result != null){
+            if (mode.equals(Consts.USER_PROFILES) || mode.equals(Consts.DOWNLOAD)){
+                DbManager dbManager = new DbManager(activity, result, mode);
+                dbManager.execute();
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -203,14 +198,6 @@ public class Http extends AsyncTask<String, String, String>{
         }
 
         //Log.e("query", jsonString);
-        if(jsonString != null){
-            if (mode.equals(Consts.USER_PROFILES) || mode.equals(Consts.DOWNLOAD)){
-                DbManager dbManager = new DbManager(activity, jsonString);
-                dbManager.execute();
-            }
-
-        }
-
         return jsonString;
     }
 

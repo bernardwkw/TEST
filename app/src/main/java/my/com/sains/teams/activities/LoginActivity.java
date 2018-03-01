@@ -116,6 +116,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         DaoSession daoSession = ((App) getApplication()).getDaoSession();
         userDao = daoSession.getUserDao();
+
+        int PERMISSION_ALL = 1;
+
+        if (!hasPermissions(this, PERMISSIONS) && Build.VERSION.SDK_INT >= 23){
+
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+
+        }else {
+            Log.e("enter", "here2");
+
+            Http http = new Http("http://172.26.80.12:8041/timber/instruct_processMobile?",
+                    LoginActivity.this, Consts.USER_PROFILES);
+            http.execute();
+        }
     }
 
     @Override
@@ -164,7 +178,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Log.e("filename", file.getParent());
 //                            Toast.makeText(LoginActivity.this,
 //                                    "File Selected: " + path, Toast.LENGTH_LONG).show();
-                            DbManager dbManager = new DbManager(LoginActivity.this, file);
+                            DbManager dbManager = new DbManager(LoginActivity.this, file, Consts.IMPORT);
                             dbManager.execute();
                             //Log.e("decoded", dbManager.readJson(file));
                         } catch (Exception e) {
@@ -177,25 +191,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
-
     @Override
     protected void onResume() {
         super.onResume();
-
-        int PERMISSION_ALL = 1;
-
-        if (!hasPermissions(this, PERMISSIONS) && Build.VERSION.SDK_INT >= 23){
-
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-
-        }else {
-            Log.e("enter", "here2");
-
-            Http http = new Http("http://172.26.80.12:8041/timber/instruct_processMobile?",
-                    LoginActivity.this, Consts.USER_PROFILES);
-            http.execute();
-        }
 
     }
 
