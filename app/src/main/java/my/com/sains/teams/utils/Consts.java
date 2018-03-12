@@ -156,10 +156,14 @@ public class Consts {
     public final static String SUMMARY_ACTIVITY = "summary_activity";
     public final static String MOBILE_LOG_REGISTER_SUMMARY = "mobile_log_register_summary";
     public final static String MYINSPECTION_SUMMARY = "inspection_summary";
+    public final static String CALLING_PAGE = "calling_page";
+    public final static String UPLOAD_SUMMARY = "upload_summary_activity";
+    public final static String ENQUIRY_RESULT = "enquiry_result_summary";
 
     //scanner info
     public final static String SCANNER_MODEL = "KT50_B2";
-    public final static String SCANNER_BRAND = "alps";
+    public final static String SPEEDATA_SCANNER_MODEL = "KT50_B2";
+    public final static String SAAT_SCANNER_MODEL = "PAD";
     public final static String SCANNER_PRODUCT = "KT50_B2";
 
 

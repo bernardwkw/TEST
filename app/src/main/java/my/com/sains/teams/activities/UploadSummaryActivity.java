@@ -93,13 +93,14 @@ public class UploadSummaryActivity extends AppCompatActivity {
         daoSession = ((App) getApplication()).getDaoSession();
         uploadSummaryModalLists = new ArrayList<>();
 
+        String regisId;
         String exchId;
+        String callingPage;
         Intent i = getIntent();
         exchId = i.getStringExtra(Consts.EXCH_ID);
 
         if (exchId != null){
             getData(exchId);
-
         }
 
         runOnUiThread(new Runnable() {
@@ -110,13 +111,11 @@ public class UploadSummaryActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
 
     }
 
@@ -150,12 +149,7 @@ public class UploadSummaryActivity extends AppCompatActivity {
                 MobileDoc.class, MobileDocDao.Properties.Exch_id)
                 .where(MobileDocDao.Properties.Exch_id.eq(exchId));
 
-
         List<MyInspectUpload> failInspectionLists = failInspectionQb.list();
-
-        for (MyInspectUpload myInspectUpload : failInspectionLists){
-            Log.e("fail Lists", myInspectUpload.getRegis_id());
-        }
 
         List<MyInspectUpload> myInspectUploadList = myInspectUploadQuery.list();
         if (myInspectUploadList.size()>0){
@@ -185,17 +179,10 @@ public class UploadSummaryActivity extends AppCompatActivity {
 
                         uploadSummaryModalLists.add(uploadSummaryModal);
                     }
-
-
-
                 }
-
             }
-
         }
-
         int passSize = allInspectionLists.size() - failInspectionLists.size();
-
         passRadioBtn.setText("Pass : "+ passSize);
         failRadioBtn.setText("Fail : " + failInspectionLists.size());
         allRadioBtn.setText("All : "+ allInspectionLists.size());

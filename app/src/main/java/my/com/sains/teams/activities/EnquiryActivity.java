@@ -2,12 +2,12 @@ package my.com.sains.teams.activities;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -26,10 +26,8 @@ import my.com.sains.teams.databinding.ActivityEnquiryBinding;
 import my.com.sains.teams.db.DaoSession;
 import my.com.sains.teams.db.InspectUpload;
 import my.com.sains.teams.db.InspectUploadDao;
-import my.com.sains.teams.db.LogRegister;
 import my.com.sains.teams.db.LogRegisterQuery;
 import my.com.sains.teams.db.LogRegisterQueryDao;
-import my.com.sains.teams.db.MobileDoc;
 import my.com.sains.teams.modal.EnquiryModal;
 import my.com.sains.teams.utils.Scanner;
 
@@ -52,44 +50,11 @@ public class EnquiryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_enquiry);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_enquiry);
-
-//        batchNoTv = findViewById(R.id.batch_tv);
-//        refNoTv = findViewById(R.id.ref_tv);
-//        nameTv = findViewById(R.id.lic_name_tv);
-//        licenseeTv = findViewById(R.id.licensee_tv);
-//        lpiTv = findViewById(R.id.lpi_tv);
-//        pmTv = findViewById(R.id.pm_tv);
-//        campTv = findViewById(R.id.camp_tv);
-//        coupeTv = findViewById(R.id.coupe_tv);
-//        blockTv = findViewById(R.id.block_tv);
-//        jhTv = findViewById(R.id.jh_mark_tv);
-//        specTv = findViewById(R.id.species_tv);
-//        diameterTv = findViewById(R.id.diameter_tv);
-//        lengthTv = findViewById(R.id.length_tv);
-//        usernameTv = findViewById(R.id.username_tv);
-//        dateTv = findViewById(R.id.date_tv);
-//        latTv= findViewById(R.id.lat_tv);
-//        longTv = findViewById(R.id.long_tv);
-//        remarksTv = findViewById(R.id.remarks_tv);
-//
-//        resultLL = findViewById(R.id.result_ll);
-//
-//        lpiTittle = findViewById(R.id.lpi_tittle);
-//        pmTittle = findViewById(R.id.pm_tittle);
-//        jhTittle = findViewById(R.id.jh_tittle);
-//        specTittle = findViewById(R.id.species_tittle);
-//        diameterTittle = findViewById(R.id.diameter_tittle);
-//        lengthTittle = findViewById(R.id.length_tittle);
-//        remarksTittle = findViewById(R.id.remarks_tittle);
-//
-//        lpiEt = findViewById(R.id.lpi_et);
-//        pmEt = findViewById(R.id.pm_et);
 
         daoSession = ((App) getApplication()).getDaoSession();
 
-        if(Scanner.isScanner()){
+        if(Scanner.isSpeedDataScanner()){
 
             scanDecode = new ScanDecode(this);
             scanDecode.initService("true");
@@ -114,6 +79,14 @@ public class EnquiryActivity extends AppCompatActivity {
                 }
             });
         }
+
+        if(Scanner.isSaatScanner()){
+
+        }
+
+        Log.e("brand", Build.BRAND);
+        Log.e("model", Build.MODEL);
+        Log.e("product", Build.PRODUCT);
 
     }
 
@@ -173,12 +146,11 @@ public class EnquiryActivity extends AppCompatActivity {
 
         if(logRegister.size() > 0){
             if (inspectUpload.size() >0){
-                binding.resultLl.setVisibility(View.VISIBLE);
-                changeInspectionTittle(true);
+//                changeInspectionTittle(true);
                 show();
             }else {
 
-                changeInspectionTittle(false);
+//                changeInspectionTittle(false);
             }
         }else {
             Toast.makeText(getApplicationContext(), "No record found", Toast.LENGTH_LONG).show();
@@ -199,11 +171,15 @@ public class EnquiryActivity extends AppCompatActivity {
             binding.blockTv.setText(tmp.getBlock_no());
 
             if (tmp.getPec_ref_no() != null){
-                binding.refTv.setText(tmp.getTrp_ref_no());
+                binding.raRefTv.setText(tmp.getRa_ref_no());
             }
 
+            binding.dprRefNoTv.setText(tmp.getDpr_ref_no());
+            binding.trpRefNoTv.setText(tmp.getTrp_ref_no());
+            binding.logSerialNoTv.setText(tmp.getLog_serial_no());
+            binding.hammerMarkNoTv.setText(tmp.getHammer_mark_no());
+
             binding.licNameTv.setText(tmp.getName());
-            binding.licenseeTv.setText(tmp.getLicensee());
         }
 
 
@@ -217,6 +193,7 @@ public class EnquiryActivity extends AppCompatActivity {
             binding.lpiTv.setText(logTmp.getLpi_no());
             binding.pmTv.setText(logTmp.getProperty_mark());
             binding.diameterTv.setText(logTmp.getDiameter().toString());
+            binding.defectDiameterTv.setText(logTmp.getDefect_dia().toString());
 
             binding.speciesTv.setText(logTmp.getSpecies_code());
             binding.lengthTv.setText(logTmp.getLength().toString());
@@ -236,13 +213,6 @@ public class EnquiryActivity extends AppCompatActivity {
             if(tmp.getGps_long() != null){
                 binding.longTv.setText(tmp.getGps_long().toString());
             }
-
-//            lpiTv.setVisibility(View.VISIBLE);
-//            pmTv.setVisibility(View.VISIBLE);
-//            diameterTv.setVisibility(View.VISIBLE);
-//            specTv.setVisibility(View.VISIBLE);
-//            lengthTv.setVisibility(View.VISIBLE);
-//            jhTv.setVisibility(View.VISIBLE);
 
             enquiryLists = new ArrayList<>();
 
@@ -282,77 +252,60 @@ public class EnquiryActivity extends AppCompatActivity {
             lengthInfo.setTitteTv(binding.lengthTittle);
             enquiryLists.add(5, lengthInfo);
 
-            for (EnquiryModal enquiryInfo : enquiryLists){
-
-                TextView textView = enquiryInfo.getTextview();
-                TextView tittleTv = enquiryInfo.getTitteTv();
-
-                if (enquiryInfo.getCheck_status().equals("P")){
-                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_green));
-                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, pass, null);
-                }else if(enquiryInfo.getCheck_status().equals("F")){
-                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_red));
-                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, fail, null);
-                }else if(enquiryInfo.getCheck_status().equals("N")){
-                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_grey));
-                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, unknown, null);
-                }
-            }
-
+//            for (EnquiryModal enquiryInfo : enquiryLists){
+//
+//                TextView textView = enquiryInfo.getTextview();
+//                TextView tittleTv = enquiryInfo.getTitteTv();
+//
+//                if (enquiryInfo.getCheck_status().equals("P")){
+//                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_green));
+//                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, pass, null);
+//                }else if(enquiryInfo.getCheck_status().equals("F")){
+//                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_red));
+//                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, fail, null);
+//                }else if(enquiryInfo.getCheck_status().equals("N")){
+//                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_grey));
+//                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, unknown, null);
+//                }
+//            }
         }
-
     }
 
-    private void changeInspectionTittle(boolean isResultExists){
-
-        String textColor = null;
-        Drawable backgroundColor = null;
-
-        if (isResultExists){
-            textColor = "#FFFFFF";
-            backgroundColor = getDrawable(R.drawable.info_blue);
-        }else {
-            textColor = "#000000";
-            backgroundColor = getDrawable(R.drawable.info_white);
-        }
-
-        binding.diameterTittle.setTextColor(Color.parseColor(textColor));
-        binding.jhTittle.setTextColor(Color.parseColor(textColor));
-        binding.lengthTittle.setTextColor(Color.parseColor(textColor));
-        binding.lpiTittle.setTextColor(Color.parseColor(textColor));
-        binding.pmTittle.setTextColor(Color.parseColor(textColor));
-        binding.speciesTittle.setTextColor(Color.parseColor(textColor));
-
-        binding.diameterTittle.setBackground(backgroundColor);
-        binding.jhTittle.setBackground(backgroundColor);
-        binding.lengthTittle.setBackground(backgroundColor);
-        binding.lpiTittle.setBackground(backgroundColor);
-        binding.pmTittle.setBackground(backgroundColor);
-        binding.speciesTittle.setBackground(backgroundColor);
-
-        binding.diameterTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-        binding.jhMarkTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-        binding.lengthTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-        binding.lengthTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-        binding.lpiTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-        binding.pmTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-        binding.speciesTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-    }
-
-    private void displayText(LogRegister logRegister, MobileDoc mobileDoc) {
-
-        binding.campTv.setText(logRegister.getCamp_code());
-        binding.coupeTv.setText(logRegister.getCoupe_no());
-        binding.blockTv.setText(logRegister.getBlock_no());
-
-        if (mobileDoc.getTrp_ref_no() != null){
-            binding.refTv.setText(mobileDoc.getTrp_ref_no());
-        }
-
-        binding.batchTv.setText(mobileDoc.getBatch_no());
-        binding.licNameTv.setText(mobileDoc.getAcct_code());
-        binding.licenseeTv.setText(mobileDoc.getName());
-    }
+//    private void changeInspectionTittle(boolean isResultExists){
+//
+//        String textColor = null;
+//        Drawable backgroundColor = null;
+//
+//        if (isResultExists){
+//            textColor = "#FFFFFF";
+//            backgroundColor = getDrawable(R.drawable.info_blue);
+//        }else {
+//            textColor = "#000000";
+//            backgroundColor = getDrawable(R.drawable.info_white);
+//        }
+//
+//        binding.diameterTittle.setTextColor(Color.parseColor(textColor));
+//        binding.jhTittle.setTextColor(Color.parseColor(textColor));
+//        binding.lengthTittle.setTextColor(Color.parseColor(textColor));
+//        binding.lpiTittle.setTextColor(Color.parseColor(textColor));
+//        binding.pmTittle.setTextColor(Color.parseColor(textColor));
+//        binding.speciesTittle.setTextColor(Color.parseColor(textColor));
+//
+//        binding.diameterTittle.setBackground(backgroundColor);
+//        binding.jhTittle.setBackground(backgroundColor);
+//        binding.lengthTittle.setBackground(backgroundColor);
+//        binding.lpiTittle.setBackground(backgroundColor);
+//        binding.pmTittle.setBackground(backgroundColor);
+//        binding.speciesTittle.setBackground(backgroundColor);
+//
+//        binding.diameterTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+//        binding.jhMarkTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+//        binding.lengthTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+//        binding.lengthTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+//        binding.lpiTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+//        binding.pmTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+//        binding.speciesTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -156,6 +156,7 @@ public class Http extends AsyncTask<String, String, String>{
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
             writer.write(getQuery(values));
+            Log.e("value", getQuery(values));
             writer.flush();
             writer.close();
             os.close();

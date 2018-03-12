@@ -11,6 +11,8 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -30,12 +32,17 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.scandecode.ScanDecode;
 import com.scandecode.inf.ScanInterface;
+import com.senter.support.openapi.StBarcodeScanner;
+import com.senter.support.openapi.StKeyManager;
 
 import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import my.com.sains.teams.R;
 import my.com.sains.teams.databinding.ActivityInspectionBinding;
@@ -57,6 +64,8 @@ import my.com.sains.teams.utils.Permission;
 import my.com.sains.teams.utils.Pref;
 import my.com.sains.teams.utils.Scanner;
 
+import static my.com.sains.teams.activities.SdkBarcodeScanActivity.Tag;
+
 public class InspectionActivity extends AppCompatActivity implements
         SlideView.OnSlideCompleteListener , LocationListener{
 
@@ -76,10 +85,13 @@ public class InspectionActivity extends AppCompatActivity implements
     private ProgressDialog progressDialog;
     private boolean isModelOpen= false;
 
+    private AtomicBoolean isScanning;
+    private StKeyManager.ShortcutKeyMonitor  f2KeyMonitor;
+
     private ScanInterface scanDecode;
 
     private Drawable pass, fail, unknown;
-
+    private Handler handler;
     private ActivityInspectionBinding binding;
 
     @Override
@@ -107,7 +119,7 @@ public class InspectionActivity extends AppCompatActivity implements
 
         Log.e("device name", Build.MODEL + "\n"+ Build.BRAND + "\n" + Build.PRODUCT);
 
-        if(Scanner.isScanner()){
+        if(Scanner.isSpeedDataScanner()){
 
             scanDecode = new ScanDecode(this);
             scanDecode.initService("true");
@@ -127,9 +139,101 @@ public class InspectionActivity extends AppCompatActivity implements
             });
         }
 
+        if (Scanner.isSaatScanner()){
+
+            f2KeyMonitor=StKeyManager.ShortcutKeyMonitor.isShortcutKeyAvailable(StKeyManager.ShortcutKey.F2) ?
+                    StKeyManager.getInstanceOfShortcutKeyMonitor(StKeyManager.ShortcutKey.F2):null;
+            isScanning = new AtomicBoolean(false);
+
+            HandlerThread handlerThread=new HandlerThread("");
+            handlerThread.start();
+            handler=new Handler(handlerThread.getLooper());
+            onUiCbF2(true);
+        }
+
     }
 
+    // F2 key pressed
 
+    protected void onUiCbF2(boolean isChecked){
+        if (isChecked) {
+            f2KeyMonitor.reset(this, f2KeyListener, handler);
+            f2KeyMonitor.startMonitor();
+        }else {
+            f2KeyMonitor.stopMonitor();
+        }
+    }
+
+    StKeyManager.ShortcutKeyMonitor.ShortcutKeyListener f2KeyListener=new StKeyManager.ShortcutKeyMonitor.ShortcutKeyListener(){
+        @Override
+        public void onKeyDown(int keycode, int repeatCount, StKeyManager.ShortcutKeyMonitor.ShortcutKeyEvent event) {
+            //at.showToastShort("F1:Down repeatCount:"+repeatCount);
+            scan();
+        }
+
+        @Override
+        public void onKeyUp(int keycode, int repeatCount, StKeyManager.ShortcutKeyMonitor.ShortcutKeyEvent event) {
+            //at.showToastShort("F1:Up repeatCount:"+repeatCount);
+        }
+
+    };
+
+    //scan barcode (saat 7 inch)
+    private void scan() {
+
+        new Thread() {
+            public void run() {
+                if (isScanning.compareAndSet(false, true) == false) {//at the same time only one thread can be allowed to scan
+                    return;
+                }
+
+                try {
+                    StBarcodeScanner scanner = StBarcodeScanner.getInstance();
+                    if (scanner == null) {
+                        Log.e(Tag, "!!!!!!!!!!!!sdk is to old to work，please update sdk");
+                        return;
+                    }
+                    StBarcodeScanner.BarcodeInfo rslt = scanner.scanBarcodeInfo();//scan ,if failed,null will be return
+
+                    final AtomicReference<String> show = new AtomicReference<String>("no barcode scanned");
+                    if (rslt!=null){
+                        show.set(new String(rslt.getBarcodeValueAsBytes(),"utf-8"));
+                    }
+
+                    Log.e("barcodeDemo", "scan result:" + show);
+
+                    //update ui
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //tView.setText(show.get());
+                            Log.e("return", show.get());
+                            String[] pieces = show.get().split(",");
+                            if (pieces.length == 4){
+
+                                String lpi = pieces[0];
+                                String pm = pieces[1];
+
+                                getData(lpi, pm);
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Invalid QR Code!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                    return;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } finally {
+                    isScanning.set(false);
+                }
+            }
+
+        }.start();
+    }
+
+    //
 
     private GPSTracker gpsTracker;
 
@@ -229,6 +333,7 @@ public class InspectionActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
+        if (f2KeyMonitor!=null&&f2KeyMonitor.isMonitoring())   f2KeyMonitor.stopMonitor();
     }
 
 
@@ -237,7 +342,6 @@ public class InspectionActivity extends AppCompatActivity implements
         super.onDestroy();
 
         if(scanDecode != null){
-
             scanDecode.onDestroy();
         }
 
