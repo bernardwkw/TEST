@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 
@@ -41,17 +40,6 @@ public class UploadSummaryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_summary);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         recyclerView = findViewById(R.id.upload_summary_recycle_view);
@@ -65,17 +53,17 @@ public class UploadSummaryActivity extends AppCompatActivity {
 
         passRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
-                    ((UploadSummaryAdapter)adapter).getFilter().filter("pass");
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (checked){
+                    ((UploadSummaryAdapter)adapter).getFilter().filter("pass"); // filter only pass inspection
                 }
             }
         });
 
         failRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
                     ((UploadSummaryAdapter)adapter).getFilter().filter("fail");
                 }
             }
@@ -83,9 +71,9 @@ public class UploadSummaryActivity extends AppCompatActivity {
 
         allRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
-                    ((UploadSummaryAdapter)adapter).getFilter().filter("");
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
+                    ((UploadSummaryAdapter)adapter).getFilter().filter("");// remove filter
                 }
             }
         });
@@ -132,9 +120,6 @@ public class UploadSummaryActivity extends AppCompatActivity {
                 .where(MobileDocDao.Properties.Exch_id.eq(exchId));
 
         List<MyInspectUpload> allInspectionLists = myInspectUploadQb.list();
-        for (MyInspectUpload myInspectUpload : allInspectionLists){
-            Log.e("lists", myInspectUpload.getRegis_id());
-        }
 
         // At least one fail will be fall into "fail" category
         QueryBuilder<MyInspectUpload> failInspectionQb = myInspectUploadDao.queryBuilder()

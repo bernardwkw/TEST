@@ -110,7 +110,7 @@ public class DbManager extends AsyncTask<Void, Integer, Void> {
 
             if(mode.equals(Consts.USER_PROFILES)){
                 JSONArray userArray = jsonObject.getJSONArray(Consts.SECURITY_APP_USER);
-                Log.e("User Array", "array");
+                Log.e("User Array", userArray.toString());
                 if (userArray != null){
 
                     for (int i=0; i< userArray.length(); i++){

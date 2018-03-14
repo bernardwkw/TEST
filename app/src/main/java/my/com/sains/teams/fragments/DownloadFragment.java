@@ -198,7 +198,6 @@ public class DownloadFragment extends Fragment {
                     mobileDocList.add(i, downloadModal);// add batch list not downloaded at top
                 }
 
-
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -220,12 +219,9 @@ public class DownloadFragment extends Fragment {
                         });
                     }
                 });
-
             }
 
-
         });
-
 
     }
 
@@ -243,13 +239,5 @@ public class DownloadFragment extends Fragment {
         }
 
     }
-
-
-
-    //    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.menu_calls_fragment, menu);
-//        super.onCreateOptionsMenu(menu, inflater);
-//    }
 
 }

@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.scandecode.ScanDecode;
-import com.scandecode.inf.ScanInterface;
 
 import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
@@ -29,9 +27,9 @@ import my.com.sains.teams.db.InspectUploadDao;
 import my.com.sains.teams.db.LogRegisterQuery;
 import my.com.sains.teams.db.LogRegisterQueryDao;
 import my.com.sains.teams.modal.EnquiryModal;
-import my.com.sains.teams.utils.Scanner;
+import my.com.sains.teams.utils.BarcodeScanner;
 
-public class EnquiryActivity extends AppCompatActivity {
+public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner.OnBarcodeScan{
 
 //    private TextView batchNoTv, refNoTv, nameTv, licenseeTv, lpiTv, pmTv, campTv, coupeTv, blockTv,
 //            jhTv, specTv, diameterTv, lengthTv, usernameTv, dateTv, latTv, longTv, remarksTv;
@@ -45,7 +43,7 @@ public class EnquiryActivity extends AppCompatActivity {
 
     private ActivityEnquiryBinding binding;
 
-    private ScanInterface scanDecode;
+    private BarcodeScanner barcodeScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,35 +52,9 @@ public class EnquiryActivity extends AppCompatActivity {
 
         daoSession = ((App) getApplication()).getDaoSession();
 
-        if(Scanner.isSpeedDataScanner()){
-
-            scanDecode = new ScanDecode(this);
-            scanDecode.initService("true");
-
-            scanDecode.getBarCode(new ScanInterface.OnScanListener() {
-                @Override
-                public void getBarcode(String s) {
-                    String[] pieces = s.split(",");
-                    if (pieces.length == 4){
-
-                        String lpi = pieces[0];
-                        String pm = pieces[1];
-
-                        getData(lpi, pm);
-                    }
-
-                    binding.scrollView.post(new Runnable() {
-                        public void run() {
-                            binding.scrollView.fullScroll(binding.scrollView.FOCUS_UP);
-                        }
-                    });
-                }
-            });
-        }
-
-        if(Scanner.isSaatScanner()){
-
-        }
+        barcodeScanner = new BarcodeScanner(EnquiryActivity.this);
+        barcodeScanner.setOnBarcodeScan(this);
+        barcodeScanner.initScanner();
 
         Log.e("brand", Build.BRAND);
         Log.e("model", Build.MODEL);
@@ -118,8 +90,7 @@ public class EnquiryActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if(scanDecode != null)
-            scanDecode.onDestroy();
+        barcodeScanner.destroyBarcode();
     }
 
     private void getData(String lpiText, String pmText){
@@ -329,5 +300,10 @@ public class EnquiryActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public void onBarcodeCallback(String decodedString) {
+
     }
 }

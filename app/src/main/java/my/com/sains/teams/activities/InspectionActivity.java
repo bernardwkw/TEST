@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -30,19 +29,14 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-import com.scandecode.ScanDecode;
-import com.scandecode.inf.ScanInterface;
-import com.senter.support.openapi.StBarcodeScanner;
 import com.senter.support.openapi.StKeyManager;
 
 import org.greenrobot.greendao.query.Query;
 import org.greenrobot.greendao.query.QueryBuilder;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import my.com.sains.teams.R;
 import my.com.sains.teams.databinding.ActivityInspectionBinding;
@@ -58,16 +52,14 @@ import my.com.sains.teams.db.MyInspectUploadDao;
 import my.com.sains.teams.modal.StatusModal;
 import my.com.sains.teams.services.GPSTracker;
 import my.com.sains.teams.slider.SlideView;
+import my.com.sains.teams.utils.BarcodeScanner;
 import my.com.sains.teams.utils.Consts;
 import my.com.sains.teams.utils.DateTime;
 import my.com.sains.teams.utils.Permission;
 import my.com.sains.teams.utils.Pref;
-import my.com.sains.teams.utils.Scanner;
-
-import static my.com.sains.teams.activities.SdkBarcodeScanActivity.Tag;
 
 public class InspectionActivity extends AppCompatActivity implements
-        SlideView.OnSlideCompleteListener , LocationListener{
+        SlideView.OnSlideCompleteListener , LocationListener, BarcodeScanner.OnBarcodeScan{
 
     private String lpi = null;
     private String pm = null;
@@ -88,11 +80,10 @@ public class InspectionActivity extends AppCompatActivity implements
     private AtomicBoolean isScanning;
     private StKeyManager.ShortcutKeyMonitor  f2KeyMonitor;
 
-    private ScanInterface scanDecode;
-
     private Drawable pass, fail, unknown;
     private Handler handler;
     private ActivityInspectionBinding binding;
+    private BarcodeScanner barcodeScanner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,121 +110,10 @@ public class InspectionActivity extends AppCompatActivity implements
 
         Log.e("device name", Build.MODEL + "\n"+ Build.BRAND + "\n" + Build.PRODUCT);
 
-        if(Scanner.isSpeedDataScanner()){
-
-            scanDecode = new ScanDecode(this);
-            scanDecode.initService("true");
-
-            scanDecode.getBarCode(new ScanInterface.OnScanListener() {
-                @Override
-                public void getBarcode(String s) {
-                    String[] pieces = s.split(",");
-                    if (pieces.length == 4){
-
-                        lpi = pieces[0];
-                        pm = pieces[1];
-
-                        getData(lpi, pm);
-                    }
-                }
-            });
-        }
-
-        if (Scanner.isSaatScanner()){
-
-            f2KeyMonitor=StKeyManager.ShortcutKeyMonitor.isShortcutKeyAvailable(StKeyManager.ShortcutKey.F2) ?
-                    StKeyManager.getInstanceOfShortcutKeyMonitor(StKeyManager.ShortcutKey.F2):null;
-            isScanning = new AtomicBoolean(false);
-
-            HandlerThread handlerThread=new HandlerThread("");
-            handlerThread.start();
-            handler=new Handler(handlerThread.getLooper());
-            onUiCbF2(true);
-        }
-
+        barcodeScanner = new BarcodeScanner(InspectionActivity.this);
+        barcodeScanner.setOnBarcodeScan(this);
+        barcodeScanner.initScanner();
     }
-
-    // F2 key pressed
-
-    protected void onUiCbF2(boolean isChecked){
-        if (isChecked) {
-            f2KeyMonitor.reset(this, f2KeyListener, handler);
-            f2KeyMonitor.startMonitor();
-        }else {
-            f2KeyMonitor.stopMonitor();
-        }
-    }
-
-    StKeyManager.ShortcutKeyMonitor.ShortcutKeyListener f2KeyListener=new StKeyManager.ShortcutKeyMonitor.ShortcutKeyListener(){
-        @Override
-        public void onKeyDown(int keycode, int repeatCount, StKeyManager.ShortcutKeyMonitor.ShortcutKeyEvent event) {
-            //at.showToastShort("F1:Down repeatCount:"+repeatCount);
-            scan();
-        }
-
-        @Override
-        public void onKeyUp(int keycode, int repeatCount, StKeyManager.ShortcutKeyMonitor.ShortcutKeyEvent event) {
-            //at.showToastShort("F1:Up repeatCount:"+repeatCount);
-        }
-
-    };
-
-    //scan barcode (saat 7 inch)
-    private void scan() {
-
-        new Thread() {
-            public void run() {
-                if (isScanning.compareAndSet(false, true) == false) {//at the same time only one thread can be allowed to scan
-                    return;
-                }
-
-                try {
-                    StBarcodeScanner scanner = StBarcodeScanner.getInstance();
-                    if (scanner == null) {
-                        Log.e(Tag, "!!!!!!!!!!!!sdk is to old to work，please update sdk");
-                        return;
-                    }
-                    StBarcodeScanner.BarcodeInfo rslt = scanner.scanBarcodeInfo();//scan ,if failed,null will be return
-
-                    final AtomicReference<String> show = new AtomicReference<String>("no barcode scanned");
-                    if (rslt!=null){
-                        show.set(new String(rslt.getBarcodeValueAsBytes(),"utf-8"));
-                    }
-
-                    Log.e("barcodeDemo", "scan result:" + show);
-
-                    //update ui
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //tView.setText(show.get());
-                            Log.e("return", show.get());
-                            String[] pieces = show.get().split(",");
-                            if (pieces.length == 4){
-
-                                String lpi = pieces[0];
-                                String pm = pieces[1];
-
-                                getData(lpi, pm);
-                            }else {
-                                Toast.makeText(getApplicationContext(), "Invalid QR Code!", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                    return;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } finally {
-                    isScanning.set(false);
-                }
-            }
-
-        }.start();
-    }
-
-    //
 
     private GPSTracker gpsTracker;
 
@@ -324,7 +204,7 @@ public class InspectionActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        if(longitude != 0 && latitude != 0)
+        //if(longitude != 0 && latitude != 0)
             getLocation();
 
     }
@@ -341,9 +221,7 @@ public class InspectionActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
 
-        if(scanDecode != null){
-            scanDecode.onDestroy();
-        }
+        barcodeScanner.destroyBarcode();
 
     }
 
@@ -648,65 +526,9 @@ public class InspectionActivity extends AppCompatActivity implements
 
         myInspectUploadDao.insert(myInspectUpload);
 
-//        longTv.setText(Double.toString(longitude));
-//        latTv.setText(Double.toString(latitude));
-//        usernameTv.setText(pref.getUserName());
-//        dateTv.setText(dateTimeStr);
-
         getData(lpi, pm); //  refresh data
 
     }
-
-//    public void updateDB(){
-//        Log.e("update","db");
-//        dateTime= new DateTime();
-//        Pref pref = new Pref(getApplicationContext());
-//
-//        MyInspectUploadDao myInspectUploadDao = daoSession.getMyInspectUploadDao();
-//
-//        MyInspectUpload myInspectUpload = myInspectUploadList.get(0);
-//        myInspectUpload.setInspect_id(myInspectUploadList.get(0).getInspect_id());
-//        myInspectUpload.setLpi_chk(statusModalList.get(0).getStatus());
-//        myInspectUpload.setPro_mark_chk(statusModalList.get(1).getStatus());
-//        myInspectUpload.setJh_hammer_chk(statusModalList.get(2).getStatus());
-//        myInspectUpload.setSpecies_chk(statusModalList.get(3).getStatus());
-//        myInspectUpload.setDiameter_chk(statusModalList.get(4).getStatus());
-//        myInspectUpload.setLength_chk(statusModalList.get(5).getStatus());
-//        myInspectUpload.setGps_lat(latitude);
-//        myInspectUpload.setGps_long(longitude);
-//        myInspectUpload.setUser_login_id(pref.getLoginId());
-//        myInspectUpload.setUser_name(pref.getUserName());
-//        myInspectUpload.setRegis_id(logRegisterList.get(0).getRegis_id());
-//        myInspectUpload.setExch_det_id(logRegisterList.get(0).getExch_det_id());
-//        myInspectUpload.setInspect_date_time(dateTime.getCurrentDateTime("yyyy-MM-dd HH:mm:ss"));
-//
-//        Log.e("date time", dateTime.getCurrentDateTime("yyyy-MM-dd HH:mm:ss"));
-//        myInspectUpload.setRemarks(remarks);
-//
-//        myInspectUploadDao.update(myInspectUpload);
-//
-//    }
-
-//    private void showGPSEnableAlert() {
-//        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-//        dialog.setTitle("Enable Location")
-//                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
-//                        "use this app")
-//                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-//                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                        startActivity(myIntent);
-//                    }
-//                })
-//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-//                    }
-//                });
-//        dialog.show();
-//    }
-
 
     @Override
     public void onSlideComplete(SlideView slideView, boolean isPass) {
@@ -941,9 +763,6 @@ public class InspectionActivity extends AppCompatActivity implements
 //        //todo
 //        View layout = inflater.inflate(R.layout.item_slideview,
 //                (ViewGroup) findViewById(R.id.root));
-//
-//
-//
 //        TextView textView = layout.findViewById(R.id.slideview_tv);
 
         singleSlideBinding.slideviewTv.setText(text);
@@ -989,4 +808,27 @@ public class InspectionActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    public void onBarcodeCallback(String decodedString) {
+        //Toast.makeText(getApplicationContext(), decodedString, Toast.LENGTH_LONG);
+        Log.e("Callback", decodedString);
+        String[] pieces = decodedString.split(",");
+        if (pieces.length == 4){
+
+            String lpi = pieces[0];
+            String pm = pieces[1];
+            getData(lpi, pm);
+
+        }else {
+
+
+        }
+
+        binding.scrollView.post(new Runnable() {
+            public void run() {
+                binding.scrollView.fullScroll(binding.scrollView.FOCUS_UP);
+            }
+        });
+
+    }
 }

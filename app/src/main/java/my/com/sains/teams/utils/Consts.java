@@ -166,5 +166,13 @@ public class Consts {
     public final static String SAAT_SCANNER_MODEL = "PAD";
     public final static String SCANNER_PRODUCT = "KT50_B2";
 
+    //color info
+    public final static String PASS_GREEN = "#b1ffa7";
+    public final static String FAIL_RED = "#fd8d8f";
+    public final static String NEUTRAL_WHITE = "#ffffff";
+
+    //
+    public final static String SELECTED_PINK ="#ffe8df";
+    public final static String UNSELECTED_GREY ="#eaeff7";
 
 }

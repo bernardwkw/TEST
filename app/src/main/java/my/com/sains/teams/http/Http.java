@@ -7,7 +7,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -122,13 +121,10 @@ public class Http extends AsyncTask<String, String, String>{
 
             Pref pref = new Pref(activity.getApplicationContext());
 
-//            values.put(Consts.MOBILE_PHONE_ID, "IhbFddtVMKR9ZAxcix0wKQ==");
             TelephonyManager telephonyManager = (TelephonyManager)activity.getApplicationContext()
                     .getSystemService(Context.TELEPHONY_SERVICE);
 
             values.put(Consts.MOBILE_PHONE_ID, CipherAES.aesEncode(telephonyManager.getDeviceId()));
-            Log.e("device id", telephonyManager.getDeviceId());
-            Log.e("encrypted", CipherAES.aesEncode(telephonyManager.getDeviceId()));
 
             if (mode.equals(Consts.DOWNLOAD_LIST)){ // get json without save (download list preview)
                 values.put(Consts.TRAN_TYPE, Consts.DOWNLOAD_LIST);
@@ -156,7 +152,6 @@ public class Http extends AsyncTask<String, String, String>{
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
             writer.write(getQuery(values));
-            Log.e("value", getQuery(values));
             writer.flush();
             writer.close();
             os.close();
@@ -184,7 +179,7 @@ public class Http extends AsyncTask<String, String, String>{
                 this.jsonString = null;
             }
 
-            if (onHttpExecuted != null){
+            if (onHttpExecuted != null){// push back the json string to the requested page
                 onHttpExecuted.onHttpExecutedCallback(jsonString);
             }
 
@@ -216,7 +211,9 @@ public class Http extends AsyncTask<String, String, String>{
 
             result.append(URLEncoder.encode(key, "UTF-8"));
             result.append("=");
+
             result.append(URLEncoder.encode(values.get(key).toString(), "UTF-8"));
+
         }
 
         return result.toString();

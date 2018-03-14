@@ -16,6 +16,7 @@ import java.util.List;
 
 import my.com.sains.teams.R;
 import my.com.sains.teams.modal.UploadSummaryModal;
+import my.com.sains.teams.utils.Consts;
 
 /**
  * Created by User on 4/1/2018.
@@ -57,66 +58,71 @@ public class UploadSummaryAdapter extends RecyclerView.Adapter<UploadSummaryAdap
         holder.remarkTv.setText(uploadSummaryModal.getMyInspectUpload().getRemarks());
         holder.userIdTv.setText(uploadSummaryModal.getMyInspectUpload().getUser_login_id());
 
-        if (uploadSummaryModal.getMyInspectUpload().getSpecies_chk().equals("P")){
-            holder.specContainer.setBackgroundColor(Color.parseColor("#b1ffa7"));
-        }else if (uploadSummaryModal.getMyInspectUpload().getSpecies_chk().equals("F")){
-            holder.specContainer.setBackgroundColor(Color.parseColor("#fd8d8f"));
+        int passColor = Color.parseColor(Consts.PASS_GREEN);
+        int failColor = Color.parseColor(Consts.FAIL_RED);
+        int neutralColor = Color.parseColor(Consts.NEUTRAL_WHITE);
+
+        if (uploadSummaryModal.getMyInspectUpload().getSpecies_chk().equals("P")){ // if inspection pass
+            holder.specContainer.setBackgroundColor(passColor); //green
+        }else if (uploadSummaryModal.getMyInspectUpload().getSpecies_chk().equals("F")){// if fail
+            holder.specContainer.setBackgroundColor(failColor);//red
         }else {
-            holder.specContainer.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.specContainer.setBackgroundColor(neutralColor);// white if no inspection data
         }
 
         if (uploadSummaryModal.getMyInspectUpload().getJh_hammer_chk().equals("P")){
-            holder.jhContainer.setBackgroundColor(Color.parseColor("#b1ffa7"));
+            holder.jhContainer.setBackgroundColor(passColor);
         }else if (uploadSummaryModal.getMyInspectUpload().getJh_hammer_chk().equals("F")){
-            holder.jhContainer.setBackgroundColor(Color.parseColor("#fd8d8f"));
+            holder.jhContainer.setBackgroundColor(failColor);
         }else {
-            holder.jhContainer.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.jhContainer.setBackgroundColor(neutralColor);
         }
 
         if (uploadSummaryModal.getMyInspectUpload().getPro_mark_chk().equals("P")){
-            holder.pmContainer.setBackgroundColor(Color.parseColor("#b1ffa7"));
+            holder.pmContainer.setBackgroundColor(passColor);
         }else if (uploadSummaryModal.getMyInspectUpload().getPro_mark_chk().equals("F")){
-            holder.pmContainer.setBackgroundColor(Color.parseColor("#fd8d8f"));
+            holder.pmContainer.setBackgroundColor(failColor);
         } else {
-            holder.pmContainer.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.pmContainer.setBackgroundColor(neutralColor);
         }
 
         if (uploadSummaryModal.getMyInspectUpload().getDiameter_chk().equals("P")){
-            holder.diameterContainer.setBackgroundColor(Color.parseColor("#b1ffa7"));
+            holder.diameterContainer.setBackgroundColor(passColor);
         }else if (uploadSummaryModal.getMyInspectUpload().getDiameter_chk().equals("F")){
-            holder.diameterContainer.setBackgroundColor(Color.parseColor("#fd8d8f"));
+            holder.diameterContainer.setBackgroundColor(failColor);
         }else {
-            holder.diameterContainer.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.diameterContainer.setBackgroundColor(neutralColor);
         }
 
         if (uploadSummaryModal.getMyInspectUpload().getLength_chk().equals("P")){
-            holder.lengthContainer.setBackgroundColor(Color.parseColor("#b1ffa7"));
+            holder.lengthContainer.setBackgroundColor(passColor);
         }else if (uploadSummaryModal.getMyInspectUpload().getLength_chk().equals("F")){
-            holder.lengthContainer.setBackgroundColor(Color.parseColor("#fd8d8f"));
+            holder.lengthContainer.setBackgroundColor(failColor);
         }else {
-            holder.lengthContainer.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.lengthContainer.setBackgroundColor(neutralColor);
         }
 
         if (uploadSummaryModal.getMyInspectUpload().getLpi_chk().equals("P")){
-            holder.lpiContainer.setBackgroundColor(Color.parseColor("#b1ffa7"));
+            holder.lpiContainer.setBackgroundColor(passColor);
         }else if (uploadSummaryModal.getMyInspectUpload().getLpi_chk().equals("F")){
-            holder.lpiContainer.setBackgroundColor(Color.parseColor("#fd8d8f"));
+            holder.lpiContainer.setBackgroundColor(failColor);
         }else {
-            holder.lpiContainer.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.lpiContainer.setBackgroundColor(neutralColor);
         }
+
+        int selectedColor = Color.parseColor(Consts.SELECTED_PINK);
+        int unselectedColor = Color.parseColor(Consts.UNSELECTED_GREY);
 
         String specCheck = uploadSummaryModal.getLogRegister().getSpec_check();
         if(specCheck != null){
-            if (uploadSummaryModal.getLogRegister().getSpec_check().equals("Y")){
-                holder.cardView.setCardBackgroundColor(Color.parseColor("#ffe8df"));
+            if (uploadSummaryModal.getLogRegister().getSpec_check().equals("Y")){// if the log is selected for inspection
+                holder.cardView.setCardBackgroundColor(selectedColor);// red color
             }else {
-                holder.cardView.setCardBackgroundColor(Color.parseColor("#eaeff7"));
+                holder.cardView.setCardBackgroundColor(unselectedColor);// grey color
             }
         }else {
-            holder.cardView.setCardBackgroundColor(Color.parseColor("#eaeff7"));
+            holder.cardView.setCardBackgroundColor(unselectedColor);
         }
-
-
     }
 
     @Override

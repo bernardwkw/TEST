@@ -16,6 +16,7 @@ import java.util.List;
 
 import my.com.sains.teams.R;
 import my.com.sains.teams.db.LogRegister;
+import my.com.sains.teams.utils.Consts;
 
 /**
  * Created by User on 4/1/2018.
@@ -55,16 +56,19 @@ public class DownloadSummaryAdapter extends RecyclerView.Adapter<DownloadSummary
         holder.length.setText(logRegister.getLength().toString());
         holder.diameter.setText(logRegister.getDiameter().toString());
 
+        int selectedColor = Color.parseColor(Consts.SELECTED_PINK);
+        int unselectedColor = Color.parseColor(Consts.UNSELECTED_GREY);
+
         String specCheck = logRegister.getSpec_check();
         if(specCheck != null){
             Log.e("specCheck", specCheck+": "+position);
             if (logRegister.getSpec_check().equals("Y")){
-                holder.cardView.setCardBackgroundColor(Color.parseColor("#ffe8df"));
+                holder.cardView.setCardBackgroundColor(selectedColor);
             }else {
-                holder.cardView.setCardBackgroundColor(Color.parseColor("#eaeff7"));
+                holder.cardView.setCardBackgroundColor(unselectedColor);
             }
         }else {
-            holder.cardView.setCardBackgroundColor(Color.parseColor("#eaeff7"));
+            holder.cardView.setCardBackgroundColor(unselectedColor);
         }
 
 
