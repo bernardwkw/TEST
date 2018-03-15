@@ -28,25 +28,24 @@ public class BarcodeScanner {
     private Handler handler;
     private AtomicBoolean isScanning;
     private ScanInterface scanDecode;
+    private boolean isRunning = true;
+    private SpeedDataScanThread speedDataScanThread;
 
     public BarcodeScanner(Activity activity){
         this.activity = activity;
-
     }
 
+    // 5.0 inch device (KT50)
     private boolean isSpeedDataScanner(){
 
         if (Consts.SPEEDATA_SCANNER_MODEL.equals(Build.MODEL)){
-
             return true;
-
         }else {
-
             return false;
         }
-
     }
 
+    // 7.0 inch (SENETR PAD)
     private boolean isSaatScanner(){
 
         if (Consts.SAAT_SCANNER_MODEL.equals(Build.MODEL)){
@@ -68,7 +67,11 @@ public class BarcodeScanner {
             HandlerThread handlerThread=new HandlerThread("");
             handlerThread.start();
             handler=new Handler(handlerThread.getLooper());
-            onUiCbF2(true);
+
+            // listen to f2 button click
+            f2KeyMonitor.reset(activity, f2KeyListener, handler);
+            f2KeyMonitor.startMonitor();
+            //onUiCbF2(true);
 
         }else if (isSpeedDataScanner()){
 
@@ -86,35 +89,46 @@ public class BarcodeScanner {
     }
 
     StKeyManager.ShortcutKeyMonitor.ShortcutKeyListener f2KeyListener=new StKeyManager.ShortcutKeyMonitor.ShortcutKeyListener(){
+        // on f2 key pressed
         @Override
         public void onKeyDown(int keycode, int repeatCount, StKeyManager.ShortcutKeyMonitor.ShortcutKeyEvent event) {
-            //at.showToastShort("F1:Down repeatCount:"+repeatCount);
-            scan();
-        }
-
-        @Override
-        public void onKeyUp(int keycode, int repeatCount, StKeyManager.ShortcutKeyMonitor.ShortcutKeyEvent event) {
-            //at.showToastShort("F1:Up repeatCount:"+repeatCount);
+            speedDataScanThread = new SpeedDataScanThread();
+            if(!speedDataScanThread.isAlive())
+                speedDataScanThread.start();
         }
 
     };
 
-    // F2 key pressed
-    // to listen to the hardware press
-    protected void onUiCbF2(boolean isChecked){
-        if (isChecked) {
-            f2KeyMonitor.reset(activity, f2KeyListener, handler);
-            f2KeyMonitor.startMonitor();
-        }else {
-            f2KeyMonitor.stopMonitor();
+    public void destroyBarcode(){
+
+        if (isSpeedDataScanner()){
+            if (scanDecode != null){
+                isRunning = false;
+                speedDataScanThread.interrupt();
+                scanDecode.onDestroy();
+            }
+        }else if (isSaatScanner()){
+            if(isSaatScanner()){
+                f2KeyMonitor.stopMonitor();
+            }
         }
     }
 
-    //scan barcode (saat 7 inch)
-    private void scan() {
+    public OnBarcodeScan onBarcodeScan;
 
-        new Thread() {
-            public void run() {
+    public void setOnBarcodeScan(OnBarcodeScan barcodeListener){
+        this.onBarcodeScan = barcodeListener;
+    }
+
+    public interface OnBarcodeScan{
+        void onBarcodeCallback(String decodedString);
+    }
+
+    private class SpeedDataScanThread extends Thread{
+
+        @Override
+        public void run() {
+            while (isRunning){
                 if (isScanning.compareAndSet(false, true) == false) {//at the same time only one thread can be allowed to scan
                     return;
                 }
@@ -133,8 +147,6 @@ public class BarcodeScanner {
                     }else {
                         show.set("No result");
                     }
-
-                    Log.e("barcodeDemo", "scan result:" + show);
 
                     //update ui
                     activity.runOnUiThread(new Runnable() {
@@ -155,25 +167,6 @@ public class BarcodeScanner {
                     isScanning.set(false);
                 }
             }
-
-        }.start();
-    }
-
-    public void destroyBarcode(){
-
-        if (isSpeedDataScanner()){
-            if (scanDecode != null)
-                scanDecode.onDestroy();
         }
-    }
-
-    public OnBarcodeScan onBarcodeScan;
-
-    public void setOnBarcodeScan(OnBarcodeScan barcodeListener){
-        this.onBarcodeScan = barcodeListener;
-    }
-
-    public interface OnBarcodeScan{
-        void onBarcodeCallback(String decodedString);
     }
 }

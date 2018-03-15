@@ -31,7 +31,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:label="TEAMS"
-            android:name=".activities.InspectionActivity">
+            android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,7 +44,7 @@
         <activity
             android:name=".activities.MainActivity" />
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".activities.InspectionActivity"
             android:label="Log Inspection"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".activities.EnquiryActivity"

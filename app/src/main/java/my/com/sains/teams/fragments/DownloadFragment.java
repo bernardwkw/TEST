@@ -157,6 +157,7 @@ public class DownloadFragment extends Fragment {
 
                 if (jsonReturn != null){
                     Log.e("json return", jsonReturn);
+                    // to get list that not downloaded
                     try {
                         JSONObject jsonObject = new JSONObject(jsonReturn);
                         JSONArray jsonArray = jsonObject.getJSONArray(Consts.EXCH_MOBILE_DOC);
@@ -179,23 +180,21 @@ public class DownloadFragment extends Fragment {
                                     tmpMobileArry.remove(mobileDoc);
                                 }
                             }
-
                         }
-
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
 
-
+                // add batch list not downloaded at top
                 for (int i=0; i< tmpMobileArry.size(); i++){
 
                     DownloadModal downloadModal = new DownloadModal();
                     downloadModal.setMobileDoc(tmpMobileArry.get(i));
                     downloadModal.setDownloaded(false);
 
-                    mobileDocList.add(i, downloadModal);// add batch list not downloaded at top
+                    mobileDocList.add(i, downloadModal);
                 }
 
                 getActivity().runOnUiThread(new Runnable() {
@@ -220,9 +219,7 @@ public class DownloadFragment extends Fragment {
                     }
                 });
             }
-
         });
-
     }
 
     @Override
@@ -237,7 +234,6 @@ public class DownloadFragment extends Fragment {
         if(mAdapter != null){
             ((DownloadAdapter) mAdapter).setOnItemClickListener(null);
         }
-
     }
 
 }

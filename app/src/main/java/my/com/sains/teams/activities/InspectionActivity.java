@@ -222,7 +222,6 @@ public class InspectionActivity extends AppCompatActivity implements
         super.onDestroy();
 
         barcodeScanner.destroyBarcode();
-
     }
 
 

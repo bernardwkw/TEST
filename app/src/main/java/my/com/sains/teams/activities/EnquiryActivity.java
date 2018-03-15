@@ -222,61 +222,8 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
             lengthInfo.setTextview(binding.lengthTv);
             lengthInfo.setTitteTv(binding.lengthTittle);
             enquiryLists.add(5, lengthInfo);
-
-//            for (EnquiryModal enquiryInfo : enquiryLists){
-//
-//                TextView textView = enquiryInfo.getTextview();
-//                TextView tittleTv = enquiryInfo.getTitteTv();
-//
-//                if (enquiryInfo.getCheck_status().equals("P")){
-//                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_green));
-//                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, pass, null);
-//                }else if(enquiryInfo.getCheck_status().equals("F")){
-//                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_red));
-//                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, fail, null);
-//                }else if(enquiryInfo.getCheck_status().equals("N")){
-//                    tittleTv.setBackground(getResources().getDrawable(R.drawable.info_grey));
-//                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, unknown, null);
-//                }
-//            }
-        }
+}
     }
-
-//    private void changeInspectionTittle(boolean isResultExists){
-//
-//        String textColor = null;
-//        Drawable backgroundColor = null;
-//
-//        if (isResultExists){
-//            textColor = "#FFFFFF";
-//            backgroundColor = getDrawable(R.drawable.info_blue);
-//        }else {
-//            textColor = "#000000";
-//            backgroundColor = getDrawable(R.drawable.info_white);
-//        }
-//
-//        binding.diameterTittle.setTextColor(Color.parseColor(textColor));
-//        binding.jhTittle.setTextColor(Color.parseColor(textColor));
-//        binding.lengthTittle.setTextColor(Color.parseColor(textColor));
-//        binding.lpiTittle.setTextColor(Color.parseColor(textColor));
-//        binding.pmTittle.setTextColor(Color.parseColor(textColor));
-//        binding.speciesTittle.setTextColor(Color.parseColor(textColor));
-//
-//        binding.diameterTittle.setBackground(backgroundColor);
-//        binding.jhTittle.setBackground(backgroundColor);
-//        binding.lengthTittle.setBackground(backgroundColor);
-//        binding.lpiTittle.setBackground(backgroundColor);
-//        binding.pmTittle.setBackground(backgroundColor);
-//        binding.speciesTittle.setBackground(backgroundColor);
-//
-//        binding.diameterTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-//        binding.jhMarkTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-//        binding.lengthTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-//        binding.lengthTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-//        binding.lpiTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-//        binding.pmTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-//        binding.speciesTv.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -304,6 +251,22 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
 
     @Override
     public void onBarcodeCallback(String decodedString) {
+        Log.e("Callback", decodedString);
+        String[] pieces = decodedString.split(",");
+        if (pieces.length == 4){
 
+            String lpi = pieces[0];
+            String pm = pieces[1];
+            getData(lpi, pm);
+
+        }else {
+
+        }
+
+        binding.scrollView.post(new Runnable() {
+            public void run() {
+                binding.scrollView.fullScroll(binding.scrollView.FOCUS_UP);
+            }
+        });
     }
 }
