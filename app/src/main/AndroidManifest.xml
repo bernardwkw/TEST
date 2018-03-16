@@ -31,6 +31,16 @@
         android:theme="@style/AppTheme">
         <activity
             android:label="TEAMS"
+            android:name=".activities.InspectionActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:label="TEAMS"
             android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,10 +53,10 @@
             android:label="TEAMS" />
         <activity
             android:name=".activities.MainActivity" />
-        <activity
-            android:name=".activities.InspectionActivity"
-            android:label="Log Inspection"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <!--<activity-->
+            <!--android:name=".activities.LoginActivity"-->
+            <!--android:label="Log Inspection"-->
+            <!--android:windowSoftInputMode="stateHidden|adjustResize" />-->
         <activity android:name=".activities.EnquiryActivity"
             android:label="Log Enquiry"
             android:windowSoftInputMode="stateHidden|adjustResize"/>

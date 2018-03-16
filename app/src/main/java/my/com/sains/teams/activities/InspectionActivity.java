@@ -24,9 +24,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationServices;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.senter.support.openapi.StKeyManager;
@@ -59,7 +56,7 @@ import my.com.sains.teams.utils.Permission;
 import my.com.sains.teams.utils.Pref;
 
 public class InspectionActivity extends AppCompatActivity implements
-        SlideView.OnSlideCompleteListener , LocationListener, BarcodeScanner.OnBarcodeScan{
+        SlideView.OnSlideCompleteListener , BarcodeScanner.OnBarcodeScan{
 
     private String lpi = null;
     private String pm = null;
@@ -70,7 +67,6 @@ public class InspectionActivity extends AppCompatActivity implements
     private List<MobileDoc> mobileDocList;
     private DateTime dateTime;
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
     private double longitude = 0;
     private double latitude = 0;
     private FloatingActionButton fab;
@@ -97,8 +93,6 @@ public class InspectionActivity extends AppCompatActivity implements
         statusModalList = new ArrayList<>();
 
         daoSession = ((App) getApplication()).getDaoSession();
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         progressDialog = new ProgressDialog(InspectionActivity.this);
         progressDialog.setMessage("Getting GPS Location. \nPlease Wait...");
@@ -213,7 +207,6 @@ public class InspectionActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        if (f2KeyMonitor!=null&&f2KeyMonitor.isMonitoring())   f2KeyMonitor.stopMonitor();
     }
 
 
@@ -260,7 +253,6 @@ public class InspectionActivity extends AppCompatActivity implements
                 LogRegisterDao.Properties.Pro_mark_reg_no.eq(pm)
         ).build();
         logRegisterList = registerQuery.list();
-
 
         // retrieve inspection data matched with lpi and pm
         MyInspectUploadDao myInspectUploadDao = daoSession.getMyInspectUploadDao();
@@ -476,14 +468,24 @@ public class InspectionActivity extends AppCompatActivity implements
             }
         });
 
-        LogRegister logRegister = logRegisterList.get(0);
+        LogRegisterDao logRegisterDao = daoSession.getLogRegisterDao();
+        Query<LogRegister> registerQuery = logRegisterDao.queryBuilder().where(
+                LogRegisterDao.Properties.Lpi_no.eq(lpi),
+                LogRegisterDao.Properties.Pro_mark_reg_no.eq(pm)
+        ).build();
+        logRegisterList = registerQuery.list();
 
-        dialogBinding.lpiChkTv.setText("LPI : "+ logRegister.getLpi_no());
-        dialogBinding.pmChkTv.setText("Property Mark : "+ logRegister.getPro_mark_reg_no());
-        dialogBinding.jhMarkChkTv.setText("JH Hammer Mark : "+ mobileDocList.get(0).getHammer_mark_no());
-        dialogBinding.specChkTv.setText("Species : "+ logRegister.getSpecies_code());
-        dialogBinding.diameterChkTv.setText("Diameter : "+ logRegister.getDiameter());
-        dialogBinding.lengthChkTv.setText("Length : "+ logRegister.getLength());
+        if (logRegisterList.size()>0){
+            LogRegister logRegister = logRegisterList.get(0);
+
+            dialogBinding.lpiChkTv.setText("LPI : "+ logRegister.getLpi_no());
+            dialogBinding.pmChkTv.setText("Property Mark : "+ logRegister.getPro_mark_reg_no());
+            dialogBinding.jhMarkChkTv.setText("JH Hammer Mark : "+ mobileDocList.get(0).getHammer_mark_no());
+            dialogBinding.specChkTv.setText("Species : "+ logRegister.getSpecies_code());
+            dialogBinding.diameterChkTv.setText("Diameter : "+ logRegister.getDiameter());
+            dialogBinding.lengthChkTv.setText("Length : "+ logRegister.getLength());
+        }
+
 
         dialogBinding.lpiSlider.setOnSlideCompleteListener(this);
         dialogBinding.pmSlider.setOnSlideCompleteListener(this);
@@ -523,7 +525,7 @@ public class InspectionActivity extends AppCompatActivity implements
         myInspectUpload.setInspect_date_time(dateTimeStr);
         myInspectUpload.setRemarks(remarks);
 
-        myInspectUploadDao.insert(myInspectUpload);
+        myInspectUploadDao.insertOrReplace(myInspectUpload);
 
         getData(lpi, pm); //  refresh data
 
@@ -558,7 +560,6 @@ public class InspectionActivity extends AppCompatActivity implements
                 }
             }
         }
-
     }
 
 
@@ -581,10 +582,6 @@ public class InspectionActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
 
     public void search(View v){
 
@@ -624,7 +621,6 @@ public class InspectionActivity extends AppCompatActivity implements
     }
 
     public void lpiClick(View v){
-
         setSlideViewData( Consts.LPI_CHK, "LPI : " +binding.lpiTv.getText().toString());
 
     }
@@ -814,8 +810,8 @@ public class InspectionActivity extends AppCompatActivity implements
         String[] pieces = decodedString.split(",");
         if (pieces.length == 4){
 
-            String lpi = pieces[0];
-            String pm = pieces[1];
+            lpi = pieces[0];
+            pm = pieces[1];
             getData(lpi, pm);
 
         }else {

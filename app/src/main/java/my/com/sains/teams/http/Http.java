@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -193,7 +194,7 @@ public class Http extends AsyncTask<String, String, String>{
             conn.disconnect();
         }
 
-        //Log.e("query", jsonString);
+        Log.e("query", jsonString);
         return jsonString;
     }
 

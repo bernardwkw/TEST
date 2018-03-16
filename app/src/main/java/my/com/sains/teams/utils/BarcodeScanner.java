@@ -29,7 +29,7 @@ public class BarcodeScanner {
     private AtomicBoolean isScanning;
     private ScanInterface scanDecode;
     private boolean isRunning = true;
-    private SpeedDataScanThread speedDataScanThread;
+    private SaatThread saatThread;
 
     public BarcodeScanner(Activity activity){
         this.activity = activity;
@@ -92,9 +92,9 @@ public class BarcodeScanner {
         // on f2 key pressed
         @Override
         public void onKeyDown(int keycode, int repeatCount, StKeyManager.ShortcutKeyMonitor.ShortcutKeyEvent event) {
-            speedDataScanThread = new SpeedDataScanThread();
-            if(!speedDataScanThread.isAlive())
-                speedDataScanThread.start();
+            saatThread = new SaatThread();
+            if(!saatThread.isAlive())
+                saatThread.start();
         }
 
     };
@@ -103,12 +103,12 @@ public class BarcodeScanner {
 
         if (isSpeedDataScanner()){
             if (scanDecode != null){
-                isRunning = false;
-                speedDataScanThread.interrupt();
                 scanDecode.onDestroy();
             }
         }else if (isSaatScanner()){
             if(isSaatScanner()){
+                isRunning = false;
+                saatThread.interrupt();
                 f2KeyMonitor.stopMonitor();
             }
         }
@@ -124,7 +124,7 @@ public class BarcodeScanner {
         void onBarcodeCallback(String decodedString);
     }
 
-    private class SpeedDataScanThread extends Thread{
+    private class SaatThread extends Thread{
 
         @Override
         public void run() {

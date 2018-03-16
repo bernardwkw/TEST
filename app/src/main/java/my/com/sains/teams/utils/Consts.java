@@ -171,8 +171,11 @@ public class Consts {
     public final static String FAIL_RED = "#fd8d8f";
     public final static String NEUTRAL_WHITE = "#ffffff";
 
-    //
+    //cardview color info
     public final static String SELECTED_PINK ="#ffe8df";
     public final static String UNSELECTED_GREY ="#eaeff7";
+
+    //
+    public final static String HTTP_URL = "http://172.26.80.12:8041/timber/instruct_processMobile?";
 
 }
