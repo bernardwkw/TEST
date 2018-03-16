@@ -108,8 +108,8 @@ public class BarcodeScanner {
         }else if (isSaatScanner()){
             if(isSaatScanner()){
                 isRunning = false;
-                saatThread.interrupt();
                 f2KeyMonitor.stopMonitor();
+
             }
         }
     }
