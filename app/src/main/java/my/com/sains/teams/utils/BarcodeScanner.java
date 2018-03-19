@@ -109,7 +109,6 @@ public class BarcodeScanner {
             if(isSaatScanner()){
                 isRunning = false;
                 f2KeyMonitor.stopMonitor();
-
             }
         }
     }

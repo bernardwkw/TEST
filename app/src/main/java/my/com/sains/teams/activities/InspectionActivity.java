@@ -130,7 +130,7 @@ public class InspectionActivity extends AppCompatActivity implements
                         if (location.getLongitude()>0 && location.getLatitude()>0){
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                            stopLocationTracking();
+                            //stopLocationTracking();
                             progressDialog.dismiss();
                             //alertDialog.dismiss();
                         }
