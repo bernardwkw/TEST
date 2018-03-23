@@ -151,6 +151,9 @@ public class Consts {
     public final static String USER_INFO_PREF = "user_info_pref";
     public final static String DEVICE_ID_PREF = "device_id_pref";
     public final static String DEVICE_ID_ENCRYPTED = "device_id_encrypted";
+    public final static String LAST_LOCATION_PREF = "last_gps_location";
+    public final static String LAST_LONGITUDE = "last_longitude";
+    public final static String LAST_LATITUDE = "last_latitude";
 
     //
     public final static String SUMMARY_ACTIVITY = "summary_activity";

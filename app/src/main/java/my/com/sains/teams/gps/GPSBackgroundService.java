@@ -1,12 +1,15 @@
-package my.com.sains.teams.services;
+package my.com.sains.teams.gps;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import my.com.sains.teams.utils.Consts;
 
@@ -22,29 +25,26 @@ public class GPSBackgroundService extends Service {
         return null;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent alaramIntent = new Intent();
-        alaramIntent.setAction("com.teams.wake");
+        alaramIntent.setAction(Consts.WAKE_ACTION);
         PendingIntent operation = PendingIntent.getBroadcast(this, 666,
                 alaramIntent, PendingIntent.FLAG_UPDATE_CURRENT );
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), Consts.WAKE_INTERVAL, operation);
 
-//        if(Build.VERSION.SDK_INT < 23){
-//            if(Build.VERSION.SDK_INT >= 19){
-//                setExact(...);
-//            }
-//            else{
-//                set(...);
-//            }
-//        }
-//        else{
-//            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), operation);
-//        }
+        if(Build.VERSION.SDK_INT <= 22){
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), Consts.WAKE_INTERVAL, operation);
+            Log.e("below equal ", "22");
+        }
+        else{
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), operation);
+            Log.e("higher than ", "22");
+        }
 
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 }

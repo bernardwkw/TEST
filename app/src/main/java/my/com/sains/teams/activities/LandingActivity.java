@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import my.com.sains.teams.R;
+import my.com.sains.teams.gps.GPSBackgroundService;
 import my.com.sains.teams.utils.MyAnimation;
 
 public class LandingActivity extends AppCompatActivity {
@@ -21,7 +22,12 @@ public class LandingActivity extends AppCompatActivity {
         Fade fade = new Fade();
         fade.setDuration(1000);
         getWindow().setEnterTransition(fade);
+
+        Intent serviceIntent = new Intent(getApplicationContext(), GPSBackgroundService.class);
+        startService(serviceIntent);
+
     }
+
 
     public void inspectionClick(View v){
 

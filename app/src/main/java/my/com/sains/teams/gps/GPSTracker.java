@@ -1,4 +1,4 @@
-package my.com.sains.teams.services;
+package my.com.sains.teams.gps;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -10,11 +10,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import my.com.sains.teams.modal.LocationModal;
+import my.com.sains.teams.utils.Pref;
 
 public class GPSTracker extends Service implements LocationListener {
 
@@ -30,8 +34,10 @@ public class GPSTracker extends Service implements LocationListener {
     boolean canGetLocation = false;
 
     Location location; // location
+    private LocationModal lastLocation;
     double latitude; // latitude
     double longitude; // longitude
+    private Pref pref;
 
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
@@ -46,6 +52,7 @@ public class GPSTracker extends Service implements LocationListener {
 
     public GPSTracker(Context context) {
         this.mContext = context;
+        pref = new Pref(mContext);
         getLocation();
     }
 
@@ -63,7 +70,8 @@ public class GPSTracker extends Service implements LocationListener {
             isNetworkEnabled = locationManager
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-            if (!isGPSEnabled && !isNetworkEnabled) {
+            //&& !isNetworkEnabled
+            if (!isGPSEnabled ) {
                 // no network provider is enabled
             } else {
                 this.canGetLocation = true;
@@ -98,12 +106,18 @@ public class GPSTracker extends Service implements LocationListener {
                         if (locationManager != null) {
                             location = locationManager
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            Log.e("last known", ": "+location.getLatitude());
+
+                            // get last known location from android memory
                             if (location != null) {
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
+                            }else { // get last known from preference (in case device restart, no location in memory)
+                                latitude = pref.getLastLocation().getLatitude();
+                                longitude = pref.getLastLocation().getLongitude();
+
                             }
                         }
+
                     }
                 }
             }
@@ -114,6 +128,19 @@ public class GPSTracker extends Service implements LocationListener {
 
         return location;
     }
+
+    private CountDownTimer countDownTimer = new CountDownTimer(20*1000, 1000) {
+        @Override
+        public void onTick(long l) {
+
+        }
+
+        @SuppressLint("MissingPermission")
+        @Override
+        public void onFinish() {
+
+        }
+    };
 
     /**
      * Stop using GPS listener
@@ -129,11 +156,7 @@ public class GPSTracker extends Service implements LocationListener {
      * Function to get latitude
      * */
     public double getLatitude(){
-        if(location != null){
-            latitude = location.getLatitude();
-        }
 
-        // return latitude
         return latitude;
     }
 
@@ -141,14 +164,20 @@ public class GPSTracker extends Service implements LocationListener {
      * Function to get longitude
      * */
     public double getLongitude(){
-        if(location != null){
-            longitude = location.getLongitude();
-        }
 
-        // return longitude
         return longitude;
     }
 
+
+    public LocationModal getLastLocation() {
+        return lastLocation;
+    }
+
+    public void setLastLocation(LocationModal lastLocation) {
+//        this.longitude = lastLocation.getLongitude();
+//        this.latitude = lastLocation.getLatitude();
+        this.lastLocation = lastLocation;
+    }
 
     /**
      * Function to check GPS/wifi enabled
@@ -196,6 +225,14 @@ public class GPSTracker extends Service implements LocationListener {
         if(GPSTracker.this.onLocationListener != null){
             GPSTracker.this.onLocationListener.onLocationCallback(location);
         }
+
+        LocationModal locationModal = new LocationModal();
+        locationModal.setLongitude((float) location.getLongitude());
+        locationModal.setLatitude((float) location.getLatitude());
+        setLastLocation(locationModal);
+
+        //save latest location into preference
+        pref.setLastLocation(location);
     }
 
     @Override
@@ -216,7 +253,6 @@ public class GPSTracker extends Service implements LocationListener {
     }
 
     private GPSTracker.OnLocationChangedListener onLocationListener;
-
 
 
     public void setOnLocationListener(GPSTracker.OnLocationChangedListener onLocationListener){

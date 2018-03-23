@@ -91,6 +91,18 @@
                 android:value="my.com.sains.teams.activities.SyncActivity" />
         </activity>
 
+        <receiver android:name=".gps.GPSBroadcastReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+                <action android:name="com.teams.GPS.wake"></action>
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".gps.GPSBackgroundService"/>
+
+
         <!--<activity-->
             <!--android:name="com.ipaulpro.afilechooser.FileChooserActivity"-->
             <!--android:enabled="@bool/use_activity"-->

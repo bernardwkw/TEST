@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -46,8 +45,9 @@ import my.com.sains.teams.db.MobileDoc;
 import my.com.sains.teams.db.MobileDocDao;
 import my.com.sains.teams.db.MyInspectUpload;
 import my.com.sains.teams.db.MyInspectUploadDao;
+import my.com.sains.teams.gps.GPSBackgroundService;
+import my.com.sains.teams.gps.GPSTracker;
 import my.com.sains.teams.modal.StatusModal;
-import my.com.sains.teams.services.GPSTracker;
 import my.com.sains.teams.slider.SlideView;
 import my.com.sains.teams.utils.BarcodeScanner;
 import my.com.sains.teams.utils.Consts;
@@ -107,6 +107,10 @@ public class InspectionActivity extends AppCompatActivity implements
         barcodeScanner = new BarcodeScanner(InspectionActivity.this);
         barcodeScanner.setOnBarcodeScan(this);
         barcodeScanner.initScanner();
+
+        //for testing
+        Intent serviceIntent = new Intent(getApplicationContext(), GPSBackgroundService.class);
+        startService(serviceIntent);
     }
 
     private GPSTracker gpsTracker;
@@ -117,28 +121,32 @@ public class InspectionActivity extends AppCompatActivity implements
             Permission.startLocationPermissionRequest(InspectionActivity.this);
         }else {
             gpsTracker = new GPSTracker(InspectionActivity.this);
+            longitude = gpsTracker.getLongitude();
+            latitude = gpsTracker.getLatitude();
+            Log.e("long", ": "+longitude);
+
             if (gpsTracker.canGetLocation()){
 
-                //to disable user from using the app after location loaded, uncomment to enable
-                //progressDialog.show();
-                //countDownTimer.start();
-
-                gpsTracker.setOnLocationListener(new GPSTracker.OnLocationChangedListener() {
-                    @Override
-                    public void onLocationCallback(Location location) {
-
-                        if (location.getLongitude()>0 && location.getLatitude()>0){
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                            //stopLocationTracking();
-                            progressDialog.dismiss();
-                            //alertDialog.dismiss();
-                        }
-                    }
-                });
-
+//                //to disable user from using the app after location loaded, uncomment to enable
+//                //progressDialog.show();
+//                //countDownTimer.start();
+//
+//                gpsTracker.setOnLocationListener(new GPSTracker.OnLocationChangedListener() {
+//                    @Override
+//                    public void onLocationCallback(Location location) {
+//
+//                        if (location.getLongitude()>0 && location.getLatitude()>0){
+//                            latitude = location.getLatitude();
+//                            longitude = location.getLongitude();
+//                            //stopLocationTracking();
+//                            progressDialog.dismiss();
+//                            //alertDialog.dismiss();
+//                        }
+//                    }
+//                });
+//
             }else {
-
+//
                 gpsTracker.showSettingsAlert();
             }
         }
@@ -398,6 +406,7 @@ public class InspectionActivity extends AppCompatActivity implements
         }
     }
 
+    //
     private void openDialog() {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
 
@@ -684,6 +693,7 @@ public class InspectionActivity extends AppCompatActivity implements
 
     }
 
+    // for single slide view clicked
     private String slideResult;
 
     private void setSlideViewData(final String type, String text){

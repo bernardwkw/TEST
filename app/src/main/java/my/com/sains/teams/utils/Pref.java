@@ -2,6 +2,10 @@ package my.com.sains.teams.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.util.Log;
+
+import my.com.sains.teams.modal.LocationModal;
 
 /**
  * Created by User on 18/12/2017.
@@ -14,6 +18,7 @@ public class Pref {
     private String loginId;
     private SharedPreferences prefs;
     private String encryptedDeviceId;
+    private Location lastLocation;
 
     public Pref(Context context){
 
@@ -56,4 +61,27 @@ public class Pref {
         prefs = context.getSharedPreferences(Consts.USER_INFO_PREF, Context.MODE_PRIVATE);
         return prefs.getString(Consts.PASSWORD, "");
     }
+
+    public LocationModal getLastLocation() {
+
+        prefs = context.getSharedPreferences(Consts.LAST_LOCATION_PREF, Context.MODE_PRIVATE);
+        LocationModal location = new LocationModal();
+        location.setLatitude(prefs.getFloat(Consts.LAST_LATITUDE,0));
+        location.setLongitude(prefs.getFloat(Consts.LAST_LONGITUDE,0));
+        Log.e("latitide", ": "+ location.getLatitude());
+
+        return location;
+    }
+
+    public void setLastLocation(Location lastLocation) {
+
+        prefs = context.getSharedPreferences(Consts.LAST_LOCATION_PREF, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(Consts.DEVICE_ID, encryptedDeviceId);
+        editor.putFloat(Consts.LAST_LATITUDE, (float) lastLocation.getLatitude());
+        editor.putFloat(Consts.LAST_LONGITUDE, (float) lastLocation.getLongitude());
+
+        //this.lastLocation = lastLocation;
+    }
+
 }
