@@ -3,7 +3,6 @@ package my.com.sains.teams.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.util.Log;
 
 import my.com.sains.teams.modal.LocationModal;
 
@@ -68,7 +67,6 @@ public class Pref {
         LocationModal location = new LocationModal();
         location.setLatitude(prefs.getFloat(Consts.LAST_LATITUDE,0));
         location.setLongitude(prefs.getFloat(Consts.LAST_LONGITUDE,0));
-        Log.e("latitide", ": "+ location.getLatitude());
 
         return location;
     }

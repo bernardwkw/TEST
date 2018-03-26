@@ -49,6 +49,7 @@ import my.com.sains.teams.db.DaoSession;
 import my.com.sains.teams.db.DbManager;
 import my.com.sains.teams.db.User;
 import my.com.sains.teams.db.UserDao;
+import my.com.sains.teams.gps.GPSTracker;
 import my.com.sains.teams.http.Http;
 import my.com.sains.teams.utils.CipherAES;
 import my.com.sains.teams.utils.Consts;
@@ -195,6 +196,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onResume() {
         super.onResume();
 
+        GPSTracker gpsTracker = new GPSTracker(LoginActivity.this);
+        if (!gpsTracker.canGetLocation()){
+            gpsTracker.showSettingsAlert();
+        }
     }
 
     private void populateAutoComplete() {

@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
 
 import my.com.sains.teams.utils.Consts;
 
@@ -32,16 +31,14 @@ public class GPSBackgroundService extends Service {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent alaramIntent = new Intent();
         alaramIntent.setAction(Consts.WAKE_ACTION);
-        PendingIntent operation = PendingIntent.getBroadcast(this, 666,
+        PendingIntent operation = PendingIntent.getBroadcast(this, Consts.WAKE_REQUEST_CODE,
                 alaramIntent, PendingIntent.FLAG_UPDATE_CURRENT );
 
         if(Build.VERSION.SDK_INT <= 22){
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), Consts.WAKE_INTERVAL, operation);
-            Log.e("below equal ", "22");
         }
-        else{
+        else{// for marshmallow and above, use setExactAndAllowWhileIdle to wake up android from doze mode
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), operation);
-            Log.e("higher than ", "22");
         }
 
 

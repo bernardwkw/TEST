@@ -5,9 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Build;
-import android.util.Log;
 
 import my.com.sains.teams.utils.Consts;
 
@@ -22,27 +20,20 @@ public class GPSBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if (Build.VERSION.SDK_INT > 22){
+        // turn off these function if mobile user (not saat and speedata) complains battery drain
+        if (Build.VERSION.SDK_INT > 22){ // fire alarm  intent for nxt gps tracking
             AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
             Intent alaramIntent = new Intent();
-            alaramIntent.setAction("com.teams.wake");
-            PendingIntent operation = PendingIntent.getBroadcast(context, 666,
+            alaramIntent.setAction(Consts.WAKE_ACTION);
+            PendingIntent operation = PendingIntent.getBroadcast(context, Consts.WAKE_REQUEST_CODE,
                     alaramIntent, PendingIntent.FLAG_UPDATE_CURRENT );
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
                     System.currentTimeMillis()+ Consts.WAKE_INTERVAL,
                     operation);
         }
 
-        gpsTracker = new GPSTracker(context);
-        if (gpsTracker.canGetLocation){
-            Log.e("location", "here");
-            gpsTracker.setOnLocationListener(new GPSTracker.OnLocationChangedListener() {
-                @Override
-                public void onLocationCallback(Location location) {
-                    gpsTracker.stopUsingGPS();
-                    gpsTracker.setOnLocationListener(null);
-                }
-            });
-        }
+
+        gpsTracker = new GPSTracker(context); // get the latest gps location
+
     }
 }

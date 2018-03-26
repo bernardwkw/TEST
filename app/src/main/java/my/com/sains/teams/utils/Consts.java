@@ -182,7 +182,7 @@ public class Consts {
     public final static String HTTP_URL = "http://172.26.80.12:8041/timber/instruct_processMobile?";
 
     //GPS background setting
-    public final static int WAKE_REQUEST_CODE = 666;
+    public final static int WAKE_REQUEST_CODE = 666;//code to differentiate it from others
     public final static String WAKE_ACTION = "com.teams.GPS.wake";
     public final static int WAKE_INTERVAL = 10 * 60 * 1000;
 

@@ -45,7 +45,6 @@ import my.com.sains.teams.db.MobileDoc;
 import my.com.sains.teams.db.MobileDocDao;
 import my.com.sains.teams.db.MyInspectUpload;
 import my.com.sains.teams.db.MyInspectUploadDao;
-import my.com.sains.teams.gps.GPSBackgroundService;
 import my.com.sains.teams.gps.GPSTracker;
 import my.com.sains.teams.modal.StatusModal;
 import my.com.sains.teams.slider.SlideView;
@@ -108,9 +107,6 @@ public class InspectionActivity extends AppCompatActivity implements
         barcodeScanner.setOnBarcodeScan(this);
         barcodeScanner.initScanner();
 
-        //for testing
-        Intent serviceIntent = new Intent(getApplicationContext(), GPSBackgroundService.class);
-        startService(serviceIntent);
     }
 
     private GPSTracker gpsTracker;
