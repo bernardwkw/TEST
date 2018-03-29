@@ -33,6 +33,7 @@ public class EnquiryResultActivity extends AppCompatActivity {
     private EnquiryResultModal enquiryResult;
     private RadioButton passRadioBtn, failRadioBtn, allRadioBtn;
 
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
