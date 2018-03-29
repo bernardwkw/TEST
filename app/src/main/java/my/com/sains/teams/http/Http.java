@@ -126,6 +126,8 @@ public class Http extends AsyncTask<String, String, String>{
                     .getSystemService(Context.TELEPHONY_SERVICE);
 
             values.put(Consts.MOBILE_PHONE_ID, CipherAES.aesEncode(telephonyManager.getDeviceId()));
+            Log.e("MOBILE_PHONE_ID", CipherAES.aesEncode(telephonyManager.getDeviceId()));
+            Log.e("MOBILE_PHONE_ID", telephonyManager.getDeviceId());
 
             if (mode.equals(Consts.DOWNLOAD_LIST)){ // get json without save (download list preview)
                 values.put(Consts.TRAN_TYPE, Consts.DOWNLOAD_LIST);

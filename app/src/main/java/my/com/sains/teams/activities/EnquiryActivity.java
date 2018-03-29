@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,7 @@ import my.com.sains.teams.db.LogRegisterQuery;
 import my.com.sains.teams.db.LogRegisterQueryDao;
 import my.com.sains.teams.modal.EnquiryModal;
 import my.com.sains.teams.utils.BarcodeScanner;
+import my.com.sains.teams.utils.Consts;
 
 public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner.OnBarcodeScan{
 
@@ -42,6 +44,8 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
     private List<EnquiryModal> enquiryLists;
 
     private ActivityEnquiryBinding binding;
+    private String regisId;
+    private FloatingActionButton fab;
 
     private BarcodeScanner barcodeScanner;
 
@@ -59,6 +63,16 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
         Log.e("brand", Build.BRAND);
         Log.e("model", Build.MODEL);
         Log.e("product", Build.PRODUCT);
+
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EnquiryActivity.this, EnquiryResultActivity.class);
+                intent.putExtra(Consts.REGIS_ID, regisId);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -116,9 +130,12 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
 
 
         if(logRegister.size() > 0){
+
+//            regisId = logRegister.get(0).getRegis_id();
+            show();
             if (inspectUpload.size() >0){
 //                changeInspectionTittle(true);
-                show();
+                fab.setVisibility(View.VISIBLE);
             }else {
 
 //                changeInspectionTittle(false);

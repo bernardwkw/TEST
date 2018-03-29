@@ -9,29 +9,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import my.com.sains.teams.R;
+import my.com.sains.teams.db.InspectUpload;
 import my.com.sains.teams.db.LogRegister;
+import my.com.sains.teams.db.LogRegisterQuery;
+import my.com.sains.teams.modal.EnquiryResultModal;
+import my.com.sains.teams.modal.UploadSummaryModal;
 import my.com.sains.teams.utils.Consts;
 
 /**
  * Created by User on 4/1/2018.
  */
 
-public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdapter.DataObjectHolder>
-        implements Filterable{
+public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdapter.DataObjectHolder> {
 
-    private List<LogRegister> logRegisterList;
-    private List<LogRegister> filterLists;
+    private List<InspectUpload> inspectUploadLists;
+    private List<InspectUpload> filterLists;
+    private LogRegisterQuery logRegisterQuery;
 
-    public EnquiryResultAdapter(List<LogRegister> logRegisterList){
+    public EnquiryResultAdapter(EnquiryResultModal enquiryResult){
 
-        this.logRegisterList = logRegisterList;
-        this.filterLists = logRegisterList;
+        this.inspectUploadLists = enquiryResult.getInspectUpload();
+        this.filterLists = enquiryResult.getInspectUpload();
+        this.logRegisterQuery = enquiryResult.getLogRegisterQuery();
     }
 
     @Override
@@ -46,47 +52,97 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
     @Override
     public void onBindViewHolder(DataObjectHolder holder, int position) {
 
-        LogRegister logRegister = logRegisterList.get(position);
-        holder.lpiTv.setText(logRegister.getLpi_no());
-        holder.coupeTv.setText(logRegister.getCoupe_no());
-        holder.blockTv.setText(logRegister.getBlock_no());
-        holder.campTv.setText(logRegister.getCamp_code());
-        holder.specTv.setText(logRegister.getSpecies_code());
-        holder.pmTv.setText(logRegister.getPro_mark_reg_no());
-        holder.length.setText(logRegister.getLength().toString());
-        holder.diameter.setText(logRegister.getDiameter().toString());
+//        EnquiryResultModal result = inspectUploadLists.get(position);
+//        LogRegisterQuery logRegisterQuery = result.getLogRegisterQuery();
+//        InspectUpload inspectUpload = result.getInspectUpload();
+        holder.lpiTv.setText(logRegisterQuery.getLpi_no());
+        holder.coupeTv.setText(logRegisterQuery.getCoupe_no());
+        holder.blockTv.setText(logRegisterQuery.getBlock_no());
+        holder.campTv.setText(logRegisterQuery.getCamp_code());
+        holder.specTv.setText(logRegisterQuery.getSpecies_code());
+        holder.pmTv.setText(logRegisterQuery.getProperty_mark());
+        holder.length.setText(logRegisterQuery.getLength().toString());
+        holder.diameter.setText(logRegisterQuery.getDiameter().toString());
 
-        int selectedColor = Color.parseColor(Consts.SELECTED_PINK);
-        int unselectedColor = Color.parseColor(Consts.UNSELECTED_GREY);
+        int passColor = Color.parseColor(Consts.PASS_GREEN);
+        int failColor = Color.parseColor(Consts.FAIL_RED);
+        int neutralColor = Color.parseColor(Consts.NEUTRAL_WHITE);
 
-        String specCheck = logRegister.getSpec_check();
-        if(specCheck != null){
-            Log.e("specCheck", specCheck+": "+position);
-            if (logRegister.getSpec_check().equals("Y")){
-                holder.cardView.setCardBackgroundColor(selectedColor);
-            }else {
-                holder.cardView.setCardBackgroundColor(unselectedColor);
-            }
+        InspectUpload inspectUpload = inspectUploadLists.get(position);
+
+        if (inspectUpload.getSpecies_chk().equals("P")){ // if inspection pass
+            holder.specContainer.setBackgroundColor(passColor); //green
+        }else if (inspectUpload.getSpecies_chk().equals("F")){// if fail
+            holder.specContainer.setBackgroundColor(failColor);//red
         }else {
-            holder.cardView.setCardBackgroundColor(unselectedColor);
+            holder.specContainer.setBackgroundColor(neutralColor);// white if no inspection data
         }
 
+        if (inspectUpload.getJh_hammer_chk().equals("P")){
+            holder.jhContainer.setBackgroundColor(passColor);
+        }else if (inspectUpload.getJh_hammer_chk().equals("F")){
+            holder.jhContainer.setBackgroundColor(failColor);
+        }else {
+            holder.jhContainer.setBackgroundColor(neutralColor);
+        }
+
+        if (inspectUpload.getPro_mark_chk().equals("P")){
+            holder.pmContainer.setBackgroundColor(passColor);
+        }else if (inspectUpload.getPro_mark_chk().equals("F")){
+            holder.pmContainer.setBackgroundColor(failColor);
+        } else {
+            holder.pmContainer.setBackgroundColor(neutralColor);
+        }
+
+        if (inspectUpload.getDiameter_chk().equals("P")){
+            holder.diameterContainer.setBackgroundColor(passColor);
+        }else if (inspectUpload.getDiameter_chk().equals("F")){
+            holder.diameterContainer.setBackgroundColor(failColor);
+        }else {
+            holder.diameterContainer.setBackgroundColor(neutralColor);
+        }
+
+        if (inspectUpload.getLength_chk().equals("P")){
+            holder.lengthContainer.setBackgroundColor(passColor);
+        }else if (inspectUpload.getLength_chk().equals("F")){
+            holder.lengthContainer.setBackgroundColor(failColor);
+        }else {
+            holder.lengthContainer.setBackgroundColor(neutralColor);
+        }
+
+        if (inspectUpload.getLpi_chk().equals("P")){
+            holder.lpiContainer.setBackgroundColor(passColor);
+        }else if (inspectUpload.getLpi_chk().equals("F")){
+            holder.lpiContainer.setBackgroundColor(failColor);
+        }else {
+            holder.lpiContainer.setBackgroundColor(neutralColor);
+        }
+
+//        int selectedColor = Color.parseColor(Consts.SELECTED_PINK);
+//        int unselectedColor = Color.parseColor(Consts.UNSELECTED_GREY);
+//
+//        String specCheck = uploadSummaryModal.getLogRegister().getSpec_check();
+//        if(specCheck != null){
+//            if (uploadSummaryModal.getLogRegister().getSpec_check().equals("Y")){// if the log is selected for inspection
+//                holder.cardView.setCardBackgroundColor(selectedColor);// red color
+//            }else {
+//                holder.cardView.setCardBackgroundColor(unselectedColor);// grey color
+//            }
+//        }else {
+//            holder.cardView.setCardBackgroundColor(unselectedColor);
+//        }
 
     }
 
     @Override
     public int getItemCount() {
-        return logRegisterList.size();
-    }
-
-    @Override
-    public Filter getFilter() {
-        return filter;
+        return inspectUploadLists.size();
     }
 
     public static class DataObjectHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         TextView lpiTv, coupeTv, blockTv, campTv, specTv, pmTv, length, diameter;
+        LinearLayout lpiContainer, jhContainer, specContainer, pmContainer, lengthContainer,diameterContainer;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
@@ -99,51 +155,15 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
             length = itemView.findViewById(R.id.length_tv);
             diameter= itemView.findViewById(R.id.diameter_tv);
             cardView = itemView.findViewById(R.id.downloaded_summary_card_view);
+
+            lpiContainer = itemView.findViewById(R.id.lpi_container);
+            jhContainer = itemView.findViewById(R.id.jh_container);
+            specContainer = itemView.findViewById(R.id.spec_container);
+            pmContainer = itemView.findViewById(R.id.pm_container);
+            lengthContainer = itemView.findViewById(R.id.length_container);
+            diameterContainer = itemView.findViewById(R.id.diameter_container);
         }
 
     }
 
-    Filter filter = new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence charSequence) {
-            FilterResults filterResults = new FilterResults();
-            List<LogRegister> tempList = new ArrayList<>();
-
-            logRegisterList = filterLists;
-
-            if(charSequence != null && charSequence.length()>0){
-                for (LogRegister logRegister: logRegisterList){
-
-
-                    if (logRegister.getSpecies_code().toUpperCase().contains(charSequence)
-                            ||logRegister.getCoupe_no().toUpperCase().contains(charSequence)
-                            ||logRegister.getBlock_no().toUpperCase().contains(charSequence)
-                            ||logRegister.getCamp_code().toUpperCase().contains(charSequence)
-                            ||logRegister.getLpi_no().toUpperCase().contains(charSequence)
-                            ||logRegister.getLog_serial_no().toUpperCase().contains(charSequence)
-                            ||logRegister.getSpecies_code().toUpperCase().contains(charSequence)
-                            ||logRegister.getPro_mark_reg_no().toUpperCase().contains(charSequence)){
-
-                        tempList.add(logRegister);
-                    }
-                }
-
-                filterResults.values = tempList;
-                filterResults.count = tempList.size();
-            } else {
-                filterResults.values = filterLists;
-                filterResults.count = filterLists.size();
-            }
-
-            return filterResults;
-        }
-
-        @Override
-        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-
-            logRegisterList = (List<LogRegister>) filterResults.values;
-            notifyDataSetChanged();
-
-        }
-    };
 }

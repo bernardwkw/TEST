@@ -8,25 +8,20 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
 
-import org.greenrobot.greendao.query.Join;
 import org.greenrobot.greendao.query.Query;
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import my.com.sains.teams.R;
+import my.com.sains.teams.adapters.EnquiryResultAdapter;
 import my.com.sains.teams.adapters.UploadSummaryAdapter;
 import my.com.sains.teams.db.DaoSession;
 import my.com.sains.teams.db.InspectUpload;
 import my.com.sains.teams.db.InspectUploadDao;
-import my.com.sains.teams.db.LogRegister;
-import my.com.sains.teams.db.LogRegisterDao;
-import my.com.sains.teams.db.MobileDoc;
-import my.com.sains.teams.db.MobileDocDao;
-import my.com.sains.teams.db.MyInspectUpload;
-import my.com.sains.teams.db.MyInspectUploadDao;
-import my.com.sains.teams.modal.UploadSummaryModal;
+import my.com.sains.teams.db.LogRegisterQuery;
+import my.com.sains.teams.db.LogRegisterQueryDao;
+import my.com.sains.teams.modal.EnquiryResultModal;
 import my.com.sains.teams.utils.Consts;
 
 public class EnquiryResultActivity extends AppCompatActivity {
@@ -35,7 +30,7 @@ public class EnquiryResultActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
-    private List<UploadSummaryModal> uploadSummaryModalLists;
+    private EnquiryResultModal enquiryResult;
     private RadioButton passRadioBtn, failRadioBtn, allRadioBtn;
 
     @Override
@@ -53,50 +48,23 @@ public class EnquiryResultActivity extends AppCompatActivity {
         failRadioBtn = findViewById(R.id.fail_rb);
         allRadioBtn = findViewById(R.id.all_rb);
 
-        passRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if (checked){
-                    ((UploadSummaryAdapter)adapter).getFilter().filter("pass"); // filter only pass inspection
-                }
-            }
-        });
-
-        failRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if(checked){
-                    ((UploadSummaryAdapter)adapter).getFilter().filter("fail");
-                }
-            }
-        });
-
-        allRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if(checked){
-                    ((UploadSummaryAdapter)adapter).getFilter().filter("");// remove filter
-                }
-            }
-        });
 
         daoSession = ((App) getApplication()).getDaoSession();
-        uploadSummaryModalLists = new ArrayList<>();
+
+        enquiryResult = new EnquiryResultModal();
 
         String regisId;
-        String exchId;
-        String callingPage;
         Intent i = getIntent();
-        exchId = i.getStringExtra(Consts.EXCH_ID);
+        regisId = i.getStringExtra(Consts.REGIS_ID);
 
-        if (exchId != null){
-            getData(exchId);
+        if (regisId != null){
+            getData(regisId);
         }
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter = new UploadSummaryAdapter(uploadSummaryModalLists);
+                adapter = new EnquiryResultAdapter(enquiryResult);
                 recyclerView.setAdapter(adapter);
             }
         });
@@ -109,39 +77,45 @@ public class EnquiryResultActivity extends AppCompatActivity {
 
     }
 
-    private void getData(String exchId){
+    private void getData(String regisId){
 
-//        MyInspectUploadDao myInspectUploadDao = daoSession.getMyInspectUploadDao();
-//        Query<MyInspectUpload> myInspectUploadQuery = myInspectUploadDao.queryBuilder()
-//                .orderDesc(MyInspectUploadDao.Properties.Inspect_id).build();
         InspectUploadDao inspectUploadDao = daoSession.getInspectUploadDao();
         Query<InspectUpload> inspectUploadQuery = inspectUploadDao.queryBuilder()
                 .orderDesc(InspectUploadDao.Properties.Inspect_id)
                 .where(InspectUploadDao.Properties.Regis_id.eq(regisId))
                 .build();
 
-//        QueryBuilder<MyInspectUpload> myInspectUploadQb = myInspectUploadDao.queryBuilder().orderDesc();
-//        Join logRegisterJoin = myInspectUploadQb.join(LogRegisterDao.Properties.Exch_det_id, LogRegister.class);
-//        myInspectUploadQb.join(logRegisterJoin, LogRegisterDao.Properties.Exch_id,
-//                MobileDoc.class, MobileDocDao.Properties.Exch_id)
-//                .where(MobileDocDao.Properties.Exch_id.eq(exchId));
-
         List<InspectUpload> allInspectionLists = inspectUploadQuery.list();
 
         // At least one fail will be fall into "fail" category
-        QueryBuilder<InspectUpload> failInspectionQb = inspectUploadDao.queryBuilder()
-                .whereOr(InspectUploadDao.Properties.Species_chk.eq(Consts.FAIL),
-                        InspectUploadDao.Properties.Diameter_chk.eq(Consts.FAIL),
-                        InspectUploadDao.Properties.Jh_hammer_chk.eq(Consts.FAIL),
-                        InspectUploadDao.Properties.Length_chk.eq(Consts.FAIL),
-                        InspectUploadDao.Properties.Lpi_chk.eq(Consts.FAIL),
-                        InspectUploadDao.Properties.Pro_mark_chk.eq(Consts.FAIL));
-        Join registerJoin = failInspectionQb.join(LogRegisterDao.Properties.Exch_det_id, LogRegister.class);
-        failInspectionQb.join(registerJoin, LogRegisterDao.Properties.Exch_id,
-                MobileDoc.class, MobileDocDao.Properties.Exch_id)
-                .where(MobileDocDao.Properties.Exch_id.eq(exchId));
+
+        Query<InspectUpload> failInspectionQb = inspectUploadDao.queryBuilder().whereOr(
+                InspectUploadDao.Properties.Species_chk.eq(Consts.FAIL),
+                InspectUploadDao.Properties.Diameter_chk.eq(Consts.FAIL),
+                InspectUploadDao.Properties.Jh_hammer_chk.eq(Consts.FAIL),
+                InspectUploadDao.Properties.Length_chk.eq(Consts.FAIL),
+                InspectUploadDao.Properties.Lpi_chk.eq(Consts.FAIL),
+                InspectUploadDao.Properties.Pro_mark_chk.eq(Consts.FAIL)
+        ).where(InspectUploadDao.Properties.Regis_id.eq(regisId))
+                .build();
 
         List<InspectUpload> failInspectionLists = failInspectionQb.list();
+
+
+        LogRegisterQueryDao logRegisterQueryDao = daoSession.getLogRegisterQueryDao();
+        Query<LogRegisterQuery> logRegisterQueryQuery = logRegisterQueryDao.queryBuilder()
+                .where(LogRegisterQueryDao.Properties.Regis_id.eq(regisId))
+                .build();
+
+        List<LogRegisterQuery> logRegisterQueryList = logRegisterQueryQuery.list();
+
+        if (logRegisterQueryList.size() > 0){
+            enquiryResult.setLogRegisterQuery(logRegisterQueryList.get(0));
+
+            if(allInspectionLists.size() > 0){
+                enquiryResult.setInspectUpload(allInspectionLists);
+            }
+        }
 
 
         int passSize = allInspectionLists.size() - failInspectionLists.size();
