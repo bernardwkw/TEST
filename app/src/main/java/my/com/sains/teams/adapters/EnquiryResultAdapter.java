@@ -6,22 +6,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import my.com.sains.teams.R;
 import my.com.sains.teams.db.InspectUpload;
 import my.com.sains.teams.db.LogRegisterQuery;
 import my.com.sains.teams.modal.EnquiryResultModal;
+import my.com.sains.teams.modal.UploadSummaryModal;
 import my.com.sains.teams.utils.Consts;
 
 /**
  * Created by User on 4/1/2018.
  */
 
-public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdapter.DataObjectHolder> {
+public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdapter.DataObjectHolder>
+        implements Filterable {
 
     private List<InspectUpload> inspectUploadLists;
     private List<InspectUpload> filterLists;
@@ -130,6 +135,11 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
     }
 
     @Override
+    public Filter getFilter() {
+        return filter;
+    }
+
+    @Override
     public int getItemCount() {
         return inspectUploadLists.size();
     }
@@ -160,5 +170,64 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
         }
 
     }
+
+    Filter filter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            FilterResults filterResults = new FilterResults();
+            List<InspectUpload> tempList = new ArrayList<>();
+
+            inspectUploadLists = filterLists;
+
+            if (charSequence.equals("pass")){
+
+                for (InspectUpload inspectUpload: inspectUploadLists){
+
+                    if (!inspectUpload.getLpi_chk().equals("F")
+                            && !inspectUpload.getLength_chk().equals("F")
+                            && !inspectUpload.getDiameter_chk().equals("F")
+                            && !inspectUpload.getPro_mark_chk().equals("F")
+                            && !inspectUpload.getJh_hammer_chk().equals("F")
+                            && !inspectUpload.getSpecies_chk().equals("F")){
+
+                        tempList.add(inspectUpload);
+                    }
+                }
+                filterResults.values = tempList;
+                filterResults.count = tempList.size();
+
+            } else if(charSequence.equals("fail")){
+
+                for (InspectUpload inspectUpload: inspectUploadLists){
+
+                    if (inspectUpload.getLpi_chk().equals("F")
+                            || inspectUpload.getLength_chk().equals("F")
+                            || inspectUpload.getDiameter_chk().equals("F")
+                            || inspectUpload.getPro_mark_chk().equals("F")
+                            || inspectUpload.getJh_hammer_chk().equals("F")
+                            || inspectUpload.getSpecies_chk().equals("F")){
+
+                        tempList.add(inspectUpload);
+                    }
+                }
+                filterResults.values = tempList;
+                filterResults.count = tempList.size();
+
+            } else {
+                filterResults.values = filterLists;
+                filterResults.count = filterLists.size();
+            }
+
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+
+            inspectUploadLists = (List<InspectUpload>) filterResults.values;
+            notifyDataSetChanged();
+
+        }
+    };
 
 }

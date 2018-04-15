@@ -52,6 +52,32 @@ public class EnquiryResultActivity extends AppCompatActivity {
         failRadioBtn = findViewById(R.id.fail_rb);
         allRadioBtn = findViewById(R.id.all_rb);
 
+        passRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if (checked){
+                    ((UploadSummaryAdapter)adapter).getFilter().filter("pass"); // filter only pass inspection
+                }
+            }
+        });
+
+        failRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
+                    ((UploadSummaryAdapter)adapter).getFilter().filter("fail");
+                }
+            }
+        });
+
+        allRadioBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
+                    ((UploadSummaryAdapter)adapter).getFilter().filter("");// remove filter
+                }
+            }
+        });
 
         daoSession = ((App) getApplication()).getDaoSession();
 
