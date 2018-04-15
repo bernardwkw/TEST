@@ -196,7 +196,7 @@ public class Http extends AsyncTask<String, String, String>{
             conn.disconnect();
         }
 
-        Log.e("query", jsonString);
+//        Log.e("query", jsonString);
         return jsonString;
     }
 

@@ -50,7 +50,7 @@ public class DownloadedSummaryActivity extends AppCompatActivity {
             LogRegisterDao logRegisterDao = daoSession.getLogRegisterDao();
 
             Query<LogRegister> logRegisterQuery = logRegisterDao.queryBuilder()
-                    .orderDesc(LogRegisterDao.Properties.Spec_check)// so spec check log show on top
+                    .orderDesc(LogRegisterDao.Properties.Spec_check)// rearrange spec_checked log show on top
                     .where(LogRegisterDao.Properties.Exch_id.eq(exchId)).build();
 
             logRegisterList = logRegisterQuery.list();

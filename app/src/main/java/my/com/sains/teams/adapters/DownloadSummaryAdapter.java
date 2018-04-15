@@ -38,7 +38,7 @@ public class DownloadSummaryAdapter extends RecyclerView.Adapter<DownloadSummary
     public DataObjectHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_summary_downloaded, parent, false);
+                .inflate(R.layout.item_summary, parent, false);
         DownloadSummaryAdapter.DataObjectHolder dataObjectHolder = new DownloadSummaryAdapter.DataObjectHolder(view);
         return dataObjectHolder;
     }

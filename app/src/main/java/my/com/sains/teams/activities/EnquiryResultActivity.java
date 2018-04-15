@@ -19,6 +19,7 @@ import my.com.sains.teams.adapters.UploadSummaryAdapter;
 import my.com.sains.teams.db.DaoSession;
 import my.com.sains.teams.db.InspectUpload;
 import my.com.sains.teams.db.InspectUploadDao;
+import my.com.sains.teams.db.LogRegister;
 import my.com.sains.teams.db.LogRegisterQuery;
 import my.com.sains.teams.db.LogRegisterQueryDao;
 import my.com.sains.teams.modal.EnquiryResultModal;
@@ -32,6 +33,8 @@ public class EnquiryResultActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private EnquiryResultModal enquiryResult;
     private RadioButton passRadioBtn, failRadioBtn, allRadioBtn;
+    private List<InspectUpload> allInspectionLists;
+    private LogRegisterQuery logRegisterQuery;
 
     
     @Override
@@ -65,7 +68,7 @@ public class EnquiryResultActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter = new EnquiryResultAdapter(enquiryResult);
+                adapter = new EnquiryResultAdapter(allInspectionLists, logRegisterQuery);
                 recyclerView.setAdapter(adapter);
             }
         });
@@ -86,7 +89,7 @@ public class EnquiryResultActivity extends AppCompatActivity {
                 .where(InspectUploadDao.Properties.Regis_id.eq(regisId))
                 .build();
 
-        List<InspectUpload> allInspectionLists = inspectUploadQuery.list();
+        allInspectionLists = inspectUploadQuery.list();
 
         // At least one fail will be fall into "fail" category
 
@@ -111,6 +114,7 @@ public class EnquiryResultActivity extends AppCompatActivity {
         List<LogRegisterQuery> logRegisterQueryList = logRegisterQueryQuery.list();
 
         if (logRegisterQueryList.size() > 0){
+            logRegisterQuery = logRegisterQueryList.get(0);
             enquiryResult.setLogRegisterQuery(logRegisterQueryList.get(0));
 
             if(allInspectionLists.size() > 0){
