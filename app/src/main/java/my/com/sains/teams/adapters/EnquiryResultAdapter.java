@@ -53,9 +53,7 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
     public void onBindViewHolder(DataObjectHolder holder, int position) {
 
         holder.lpiTv.setText(logRegisterQuery.getLpi_no());
-        holder.coupeTv.setText(logRegisterQuery.getCoupe_no());
-        holder.blockTv.setText(logRegisterQuery.getBlock_no());
-        holder.campTv.setText(logRegisterQuery.getCamp_code());
+        holder.jhTv.setText(logRegisterQuery.getCoupe_no());
         holder.specTv.setText(logRegisterQuery.getSpecies_code());
         holder.pmTv.setText(logRegisterQuery.getProperty_mark());
         holder.length.setText(logRegisterQuery.getLength().toString());
@@ -147,20 +145,21 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
 
     public static class DataObjectHolder extends RecyclerView.ViewHolder {
         CardView cardView;
-        TextView lpiTv, coupeTv, blockTv, campTv, specTv, pmTv, length, diameter;
+        TextView lpiTv, longTv, latTv, jhTv, specTv, pmTv, length, diameter,
+                userIdTv, remarkTv;
         LinearLayout lpiContainer, jhContainer, specContainer, pmContainer, lengthContainer,diameterContainer;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
             lpiTv = itemView.findViewById(R.id.lpi_tv);
-            coupeTv = itemView.findViewById(R.id.coupe_tv);
-            blockTv = itemView.findViewById(R.id.block_tv);
-            campTv = itemView.findViewById(R.id.camp_tv);
+            jhTv = itemView.findViewById(R.id.jh_tv);
             specTv = itemView.findViewById(R.id.spec_tv);
             pmTv = itemView.findViewById(R.id.pm_tv);
             length = itemView.findViewById(R.id.length_tv);
             diameter= itemView.findViewById(R.id.diameter_tv);
-            cardView = itemView.findViewById(R.id.downloaded_summary_card_view);
+            remarkTv = itemView.findViewById(R.id.remarks_tv);
+            userIdTv = itemView.findViewById(R.id.user_tv);
+            cardView = itemView.findViewById(R.id.upload_summary_card_view);
 
             lpiContainer = itemView.findViewById(R.id.lpi_container);
             jhContainer = itemView.findViewById(R.id.jh_container);
