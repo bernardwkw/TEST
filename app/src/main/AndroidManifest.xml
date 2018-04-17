@@ -91,6 +91,8 @@
                 android:value="my.com.sains.teams.activities.SyncActivity" />
         </activity>
 
+        <activity android:name=".activities.EnquiryResultActivity"/>
+
         <receiver android:name=".gps.GPSBroadcastReceiver"
             android:enabled="true">
             <intent-filter>

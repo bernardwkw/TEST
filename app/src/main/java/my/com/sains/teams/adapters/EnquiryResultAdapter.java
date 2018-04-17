@@ -34,8 +34,11 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
 
     public EnquiryResultAdapter(List<InspectUpload> inspectUploadLists,  LogRegisterQuery logRegisterQuery){
 
-        this.inspectUploadLists = inspectUploadLists;
-        this.filterLists = inspectUploadLists;
+        this.inspectUploadLists = new ArrayList<>();
+        this.filterLists = new ArrayList<>();
+        this.inspectUploadLists.addAll(inspectUploadLists) ;
+        this.filterLists.addAll(inspectUploadLists);
+
         this.logRegisterQuery = logRegisterQuery;
     }
 
