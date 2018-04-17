@@ -137,7 +137,7 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
 //                changeInspectionTittle(true);
                 fab.setVisibility(View.VISIBLE);
             }else {
-
+                fab.setVisibility(View.INVISIBLE);
 //                changeInspectionTittle(false);
             }
         }else {

@@ -94,8 +94,13 @@ public class EnquiryResultActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter = new EnquiryResultAdapter(allInspectionLists, logRegisterQuery);
-                recyclerView.setAdapter(adapter);
+
+                if (allInspectionLists.size() >0 && logRegisterQuery != null ){
+
+                    adapter = new EnquiryResultAdapter(allInspectionLists, logRegisterQuery);
+                    recyclerView.setAdapter(adapter);
+                }
+
             }
         });
 
