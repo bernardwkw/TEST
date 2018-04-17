@@ -16,7 +16,7 @@ import org.greenrobot.greendao.annotation.Id;
 public class LogRegisterQuery {
 
     @Id
-    private Long regis_id;
+    private String regis_id;
     private String device_id;
     private String office_id;
     private String licensee;
@@ -55,12 +55,12 @@ public class LogRegisterQuery {
     public LogRegisterQuery() {
     }
 
-    public LogRegisterQuery(Long regis_id) {
+    public LogRegisterQuery(String regis_id) {
         this.regis_id = regis_id;
     }
 
     @Generated
-    public LogRegisterQuery(Long regis_id, String device_id, String office_id, String licensee, String property_mark, String pec_ref_no, String lpi_no, String dpr_ref_no, String ra_ref_no, String harvest_date, String coupe_no, String block_no, String camp_code, String log_serial_no, String species_code, Double length, Double diameter, Double defect_dia, Double net_vol, Double compute_vol, String ra_processing_office, String hammer_mark_no, String place_ra_marking, String trp_ref_no, String name, String tran_mode, String by_name, String rp_no, String to_loc, String frm_loc, String sync_status) {
+    public LogRegisterQuery(String regis_id, String device_id, String office_id, String licensee, String property_mark, String pec_ref_no, String lpi_no, String dpr_ref_no, String ra_ref_no, String harvest_date, String coupe_no, String block_no, String camp_code, String log_serial_no, String species_code, Double length, Double diameter, Double defect_dia, Double net_vol, Double compute_vol, String ra_processing_office, String hammer_mark_no, String place_ra_marking, String trp_ref_no, String name, String tran_mode, String by_name, String rp_no, String to_loc, String frm_loc, String sync_status) {
         this.regis_id = regis_id;
         this.device_id = device_id;
         this.office_id = office_id;
@@ -94,11 +94,11 @@ public class LogRegisterQuery {
         this.sync_status = sync_status;
     }
 
-    public Long getRegis_id() {
+    public String getRegis_id() {
         return regis_id;
     }
 
-    public void setRegis_id(Long regis_id) {
+    public void setRegis_id(String regis_id) {
         this.regis_id = regis_id;
     }
 

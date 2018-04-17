@@ -10,7 +10,6 @@ import android.widget.RadioButton;
 
 import org.greenrobot.greendao.query.Query;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import my.com.sains.teams.R;
@@ -19,7 +18,6 @@ import my.com.sains.teams.adapters.UploadSummaryAdapter;
 import my.com.sains.teams.db.DaoSession;
 import my.com.sains.teams.db.InspectUpload;
 import my.com.sains.teams.db.InspectUploadDao;
-import my.com.sains.teams.db.LogRegister;
 import my.com.sains.teams.db.LogRegisterQuery;
 import my.com.sains.teams.db.LogRegisterQueryDao;
 import my.com.sains.teams.modal.EnquiryResultModal;

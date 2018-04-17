@@ -54,6 +54,7 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_enquiry);
 
+//        daoSession = ((App) getApplication()).getDaoSession();
         daoSession = ((App) getApplication()).getDaoSession();
 
         barcodeScanner = new BarcodeScanner(EnquiryActivity.this);
@@ -131,7 +132,7 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
 
         if(logRegister.size() > 0){
 
-//            regisId = logRegister.get(0).getRegis_id();
+            regisId = logRegister.get(0).getRegis_id();
             show();
             if (inspectUpload.size() >0){
 //                changeInspectionTittle(true);
@@ -177,6 +178,8 @@ public class EnquiryActivity extends AppCompatActivity implements BarcodeScanner
 
             InspectUpload tmp = inspectUpload.get(0);
             LogRegisterQuery logTmp = logRegister.get(0);
+
+            regisId = tmp.getRegis_id();
 
             binding.lpiTv.setText(logTmp.getLpi_no());
             binding.pmTv.setText(logTmp.getProperty_mark());

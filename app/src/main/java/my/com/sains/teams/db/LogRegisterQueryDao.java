@@ -14,7 +14,7 @@ import org.greenrobot.greendao.internal.DaoConfig;
 /**
  * DAO for table "LOG_REGISTER_QUERY".
 */
-public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, Long> {
+public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, String> {
 
     public static final String TABLENAME = "LOG_REGISTER_QUERY";
 
@@ -23,7 +23,7 @@ public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Regis_id = new Property(0, Long.class, "regis_id", true, "REGIS_ID");
+        public final static Property Regis_id = new Property(0, String.class, "regis_id", true, "REGIS_ID");
         public final static Property Device_id = new Property(1, String.class, "device_id", false, "DEVICE_ID");
         public final static Property Office_id = new Property(2, String.class, "office_id", false, "OFFICE_ID");
         public final static Property Licensee = new Property(3, String.class, "licensee", false, "LICENSEE");
@@ -69,7 +69,7 @@ public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"LOG_REGISTER_QUERY\" (" + //
-                "\"REGIS_ID\" INTEGER PRIMARY KEY ," + // 0: regis_id
+                "\"REGIS_ID\" TEXT PRIMARY KEY NOT NULL ," + // 0: regis_id
                 "\"DEVICE_ID\" TEXT," + // 1: device_id
                 "\"OFFICE_ID\" TEXT," + // 2: office_id
                 "\"LICENSEE\" TEXT," + // 3: licensee
@@ -112,9 +112,9 @@ public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, Long> {
     protected final void bindValues(DatabaseStatement stmt, LogRegisterQuery entity) {
         stmt.clearBindings();
  
-        Long regis_id = entity.getRegis_id();
+        String regis_id = entity.getRegis_id();
         if (regis_id != null) {
-            stmt.bindLong(1, regis_id);
+            stmt.bindString(1, regis_id);
         }
  
         String device_id = entity.getDevice_id();
@@ -272,9 +272,9 @@ public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, Long> {
     protected final void bindValues(SQLiteStatement stmt, LogRegisterQuery entity) {
         stmt.clearBindings();
  
-        Long regis_id = entity.getRegis_id();
+        String regis_id = entity.getRegis_id();
         if (regis_id != null) {
-            stmt.bindLong(1, regis_id);
+            stmt.bindString(1, regis_id);
         }
  
         String device_id = entity.getDevice_id();
@@ -429,14 +429,14 @@ public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, Long> {
     }
 
     @Override
-    public Long readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
+    public String readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0);
     }    
 
     @Override
     public LogRegisterQuery readEntity(Cursor cursor, int offset) {
         LogRegisterQuery entity = new LogRegisterQuery( //
-            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // regis_id
+            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // regis_id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // device_id
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // office_id
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // licensee
@@ -473,7 +473,7 @@ public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, Long> {
      
     @Override
     public void readEntity(Cursor cursor, LogRegisterQuery entity, int offset) {
-        entity.setRegis_id(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setRegis_id(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
         entity.setDevice_id(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setOffice_id(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setLicensee(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
@@ -507,13 +507,12 @@ public class LogRegisterQueryDao extends AbstractDao<LogRegisterQuery, Long> {
      }
     
     @Override
-    protected final Long updateKeyAfterInsert(LogRegisterQuery entity, long rowId) {
-        entity.setRegis_id(rowId);
-        return rowId;
+    protected final String updateKeyAfterInsert(LogRegisterQuery entity, long rowId) {
+        return entity.getRegis_id();
     }
     
     @Override
-    public Long getKey(LogRegisterQuery entity) {
+    public String getKey(LogRegisterQuery entity) {
         if(entity != null) {
             return entity.getRegis_id();
         } else {

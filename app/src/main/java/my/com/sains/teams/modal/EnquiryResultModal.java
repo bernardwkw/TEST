@@ -1,7 +1,5 @@
 package my.com.sains.teams.modal;
 
-import android.support.v7.widget.LinearSmoothScroller;
-
 import java.util.List;
 
 import my.com.sains.teams.db.InspectUpload;

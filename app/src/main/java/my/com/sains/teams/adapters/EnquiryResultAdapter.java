@@ -17,8 +17,6 @@ import java.util.List;
 import my.com.sains.teams.R;
 import my.com.sains.teams.db.InspectUpload;
 import my.com.sains.teams.db.LogRegisterQuery;
-import my.com.sains.teams.modal.EnquiryResultModal;
-import my.com.sains.teams.modal.UploadSummaryModal;
 import my.com.sains.teams.utils.Consts;
 
 /**
