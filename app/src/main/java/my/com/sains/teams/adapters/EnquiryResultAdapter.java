@@ -44,7 +44,7 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
     public DataObjectHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_summary, parent, false);
+                .inflate(R.layout.item_summary_enquiry_result, parent, false);
         EnquiryResultAdapter.DataObjectHolder dataObjectHolder = new EnquiryResultAdapter.DataObjectHolder(view);
         return dataObjectHolder;
     }
