@@ -162,12 +162,12 @@ public class EnquiryResultAdapter extends RecyclerView.Adapter<EnquiryResultAdap
             diameter= itemView.findViewById(R.id.diameter_tv);
             cardView = itemView.findViewById(R.id.downloaded_summary_card_view);
 
-//            lpiContainer = itemView.findViewById(R.id.lpi_container);
-//            jhContainer = itemView.findViewById(R.id.jh_container);
-//            specContainer = itemView.findViewById(R.id.spec_container);
-//            pmContainer = itemView.findViewById(R.id.pm_container);
-//            lengthContainer = itemView.findViewById(R.id.length_container);
-//            diameterContainer = itemView.findViewById(R.id.diameter_container);
+            lpiContainer = itemView.findViewById(R.id.lpi_container);
+            jhContainer = itemView.findViewById(R.id.jh_container);
+            specContainer = itemView.findViewById(R.id.spec_container);
+            pmContainer = itemView.findViewById(R.id.pm_container);
+            lengthContainer = itemView.findViewById(R.id.length_container);
+            diameterContainer = itemView.findViewById(R.id.diameter_container);
         }
 
     }
