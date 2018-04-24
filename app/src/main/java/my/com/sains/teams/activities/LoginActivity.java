@@ -39,20 +39,26 @@ import android.widget.TextView;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import org.greenrobot.greendao.query.Query;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import my.com.sains.teams.R;
 import my.com.sains.teams.db.DaoSession;
 import my.com.sains.teams.db.DbManager;
+import my.com.sains.teams.db.InspectUpload;
+import my.com.sains.teams.db.MyInspectUpload;
 import my.com.sains.teams.db.User;
 import my.com.sains.teams.db.UserDao;
 import my.com.sains.teams.gps.GPSTracker;
 import my.com.sains.teams.http.Http;
 import my.com.sains.teams.utils.CipherAES;
 import my.com.sains.teams.utils.Consts;
+import my.com.sains.teams.utils.IO;
 import my.com.sains.teams.utils.Pref;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -200,6 +206,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (!gpsTracker.canGetLocation()){
             gpsTracker.showSettingsAlert();
         }
+
+
+        //example to export into txt file
+        // class to save IO.class
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("MobileId","CR+DNfOQU+iAEIoXtN/OrQ==");
+            jsonObject.put("number",  2);
+            IO.export(jsonObject);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     private void populateAutoComplete() {

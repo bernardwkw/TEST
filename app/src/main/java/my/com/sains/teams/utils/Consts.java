@@ -1,5 +1,7 @@
 package my.com.sains.teams.utils;
 
+import android.os.Environment;
+
 /**
  * Created by User on 5/12/2017.
  */
@@ -186,5 +188,7 @@ public class Consts {
     public final static String WAKE_ACTION = "com.teams.GPS.wake";
     public final static int WAKE_INTERVAL = 10 * 60 * 1000;
 
+    // Get File Directory
+    public final static String EXPORT_DIR = Environment.getExternalStorageDirectory()+"/TEAMS/EXPORT/";
 
 }

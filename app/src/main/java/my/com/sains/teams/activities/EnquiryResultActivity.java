@@ -54,7 +54,7 @@ public class EnquiryResultActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (checked){
-                    ((UploadSummaryAdapter)adapter).getFilter().filter("pass"); // filter only pass inspection
+                    ((EnquiryResultAdapter)adapter).getFilter().filter("pass"); // filter only pass inspection
                 }
             }
         });
@@ -63,7 +63,7 @@ public class EnquiryResultActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if(checked){
-                    ((UploadSummaryAdapter)adapter).getFilter().filter("fail");
+                    ((EnquiryResultAdapter)adapter).getFilter().filter("fail");
                 }
             }
         });
@@ -72,7 +72,7 @@ public class EnquiryResultActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if(checked){
-                    ((UploadSummaryAdapter)adapter).getFilter().filter("");// remove filter
+                    ((EnquiryResultAdapter)adapter).getFilter().filter("");// remove filter
                 }
             }
         });
