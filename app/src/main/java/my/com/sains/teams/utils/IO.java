@@ -45,7 +45,7 @@ public class IO {
 //        objectOutputStream.close();
 
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-        bufferedWriter.write(jsonObject.toString().);
+        bufferedWriter.write(jsonObject.toString());
         bufferedWriter.close();
         isExported = true;
 
